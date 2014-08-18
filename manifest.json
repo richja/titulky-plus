@@ -1,0 +1,13 @@
+{
+	"name": "Požadavky na titulky.com",
+	"author": "richja aka Jan Richter",
+	"version": "0.0.1",
+	"description": "Vylepšení sekce Požadavky o další odkazy",
+	"manifest_version": 2,
+	"content_scripts": [
+	{
+		"matches": ["http://www.titulky.com/*Stat=6*"],
+		"js": ["jquery.min.js","content.js"]
+	}
+	]
+}
