@@ -1,4 +1,3 @@
-/* Content.js - main logic */
 $(document).ready(function() {
 	$(".detailh:first").text("Poslední").attr("width",70);
 	$(".detailh").eq(1).after('<td class="detailh ucase" width="40">CSFD</td>');
