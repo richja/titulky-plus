@@ -1,8 +1,8 @@
 {
-	"name": "Požadavky na titulky.com",
+	"name": "Titulky plus",
 	"author": "Jan Richter aka richja",
 	"version": "0.0.1",
-	"description": "Vylepšení sekce Požadavky o další odkazy",
+	"description": "Vylepšení webu titulky.com pro pohodlnější práci",
 	"manifest_version": 2,
 	"icons": {
 		"16": "icon16.png",
