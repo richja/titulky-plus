@@ -1,0 +1,19 @@
+#side1cont {
+	position: relative;
+}
+
+.plus-new {
+	position: absolute;
+	display: block;
+	border-radius: 4px;
+	background: #DDDDDD;
+	font-size: 13px;
+	padding: 5px;
+	right: 52px;
+	top: 70px;
+}
+
+.plus-new:hover {
+	text-decoration: none;
+	background: #DDDDDD;
+}

@@ -10,8 +10,9 @@
 		"128": "icon128.png" },
 	"content_scripts": [
 	{
-		"matches": ["http://www.titulky.com/*Stat=6*"],
-		"js": ["jquery.min.js","content.js"]
+		"matches": ["http://www.titulky.com/*"],
+		"js": ["jquery.min.js","content.js"],
+		"css": ["cstyle.css"]
 	}
 	]
 }
