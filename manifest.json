@@ -7,7 +7,12 @@
 	"icons": {
 		"16": "icon16.png",
 		"48": "icon48.png",
-		"128": "icon128.png" },
+		"128": "icon128.png"
+	},
+	"permissions": ["http://csfdapi.cz/"],
+	"web_accessible_resources": [
+		"*.png"
+	],
 	"content_scripts": [
 	{
 		"matches": ["http://www.titulky.com/*"],

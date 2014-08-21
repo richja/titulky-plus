@@ -1,4 +1,4 @@
-#side1cont {
+#side1cont, #contcont {
 	position: relative;
 }
 
@@ -16,4 +16,33 @@
 .plus-new:hover {
 	text-decoration: none;
 	background: #DDDDDD;
+}
+
+.plus-rating {
+	position: absolute;
+	right: 22px;
+	top: 75px;
+	color: #FFF;
+	background: #346792;
+	padding: 10px;
+	font-size: 2em;
+	font-weight: bold;
+	border-radius: 4px;
+}
+
+.plus-rating a, .plus-rating a:hover,.plus-rating a:visited {
+	text-decoration: none;
+	color: #FFF !important;
+}
+
+.plus-rating-blue {
+	background: #658DB4;
+}
+
+.plus-rating-red {
+	background: #BB0011;
+}
+
+.plus-rating-black {
+	background: #535353;
 }
