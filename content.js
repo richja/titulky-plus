@@ -1,4 +1,4 @@
-function searchMovie (title,year) {
+function searchMovieCsfd (title,year) {
 	$.get("http://csfdapi.cz/movie?search="+title,function(data) {
 		var id = false;
 		for (var resultsCount = data.length,i=0; i < resultsCount; i++) {
@@ -10,25 +10,42 @@ function searchMovie (title,year) {
 
 		if (id) {
 			$.get("http://csfdapi.cz/movie/"+id,function(data) {
-				makeMagic(data["rating"],data["csfd_url"]);
+				makeMagicCsfd(data["rating"],data["csfd_url"]);
 			});
 		}
 
 	});
 }
 
-function makeMagic (rating,url) {
-	console.log(rating,url);
+function searchMovieImdb (imdb) {
+	$.get("http://www.omdbapi.com/?i="+imdb,function(data) {
+		data = JSON.parse(data);
+		if (data.imdbRating) {
+			makeMagicImdb(data.imdbRating);
+		}
+	});
+}
+
+function makeMagicCsfd (rating,url) {
 	$("a[target='imdb']").after("<a href=\""+url+"\" target=\"csfd\"><img src=\"chrome-extension://"+chrome.runtime.id+"/csfd.png\" alt=\"CSFD.cz\"></a>");
 	if (typeof rating !== "undefined") {
 		var ratingBg = "plus-rating-blue";
 		if (rating >= 70) ratingBg = "plus-rating-red";
 		if (rating <= 30) ratingBg = "plus-rating-black";
-		$("#contcont").prepend("<div title =\"hodnocení na CSFD\" class =\"plus-rating "+ratingBg+"\"><a href=\""+url+"\" target=\"csfd\">"+rating+"%</a></div>");
+		$("#contcont").prepend("<div title =\"Hodnocení filmu na CSFD\" class =\"plus-rating "+ratingBg+"\"><a href=\""+url+"\" target=\"csfd\">"+rating+"%</a></div>");
 	}
 	else {
-		$("#contcont").prepend("<div title =\"hodnocení na CSFD - prozatím nelze hodnotit\" class =\"plus-rating\"><a href=\""+url+"\" target=\"csfd\"><img src =\"chrome-extension://"+chrome.runtime.id+"/lock.png\"></a></div>");
+		$("#contcont").prepend("<div title =\"Hodnocení filmu na ČSFD - prozatím nelze hodnotit\" class =\"plus-rating\"><a href=\""+url+"\" target=\"csfd\"><img src =\"chrome-extension://"+chrome.runtime.id+"/lock.png\"></a></div>");
 	}
+}
+
+function makeMagicImdb (rating) {
+
+	var ratingBg = "plus-rating-blue";
+	if (rating >= 7.0) ratingBg = "plus-rating-red";
+	if (rating <= 3.0) ratingBg = "plus-rating-black";
+	var url = $("a[target='imdb']").attr("href");
+	$("#contcont").prepend("<div title =\"hodnocení na IMDB\" class =\"plus-rating plus-rating-imdb "+ratingBg+"\"><a href=\""+url+"\" target=\"_blank\">"+rating+"</a></div>");
 }
 
 $(document).ready(function() {
@@ -54,7 +71,9 @@ $(document).ready(function() {
 		var titleArray = $("h1").text().split(" ("),
 			title = titleArray[0],
 			spaceTitle = title.replace(new RegExp(" ", 'g'), "+"),
-			year = titleArray[1].substring(0,4);
-		searchMovie(spaceTitle,year);
+			year = titleArray[1].substring(0,4),
+			imdb = $("a[target='imdb']").attr("href").split("title/")[1].slice(0,-1);
+		searchMovieCsfd(spaceTitle,year);
+		searchMovieImdb(imdb);
 	}
 });

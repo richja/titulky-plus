@@ -30,6 +30,11 @@
 	border-radius: 4px;
 }
 
+.plus-rating-imdb {
+	right: 90px;
+	top: 75px;
+}
+
 .plus-rating a, .plus-rating a:hover,.plus-rating a:visited {
 	text-decoration: none;
 	color: #FFF !important;
