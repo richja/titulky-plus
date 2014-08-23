@@ -13,7 +13,6 @@ function searchMovieCsfd (title,year) {
 				makeMagicCsfd(data["rating"],data["csfd_url"]);
 			});
 		}
-
 	});
 }
 
@@ -49,7 +48,22 @@ function makeMagicImdb (rating) {
 }
 
 $(document).ready(function() {
-	$("a[href$='Logoff=true']").closest("table").after("<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový překlad</a>");
+
+	// kdokoliv je prihlasen, odkaz na vytvoreni noveho prekladu
+		$("a[href$='Logoff=true']").closest("table").after("<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový překlad</a>");
+
+	// pouze prihlaseni
+		if ($("a[href$='Logoff=true']").length)
+		{
+			$("#search_submit").after("<a title =\"Vyhledat přesnou shodu (pouze pro premium uživatele)\" href =\"\" class=\"tlacitko plus-search\">Vyhledat přesně</a>");
+			$(".plus-search").click(function(event){
+				window.location.href ="http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ARelease=&ARok=&ANazev="+$("#searchTitulky").val();
+				return false;
+			});
+			$("#tablesearch").css("margin-bottom","20px");
+		}
+
+	// sekce pozadavky
 	if (location.href.indexOf("Stat=6") !== -1)
 	{
 		$(".detailh:first").text("Poslední").attr("width",70);
@@ -66,14 +80,50 @@ $(document).ready(function() {
 		});
 	}
 
+	// detail titulku
 	if ($("h1").length && $("a[target='imdb']").length)
 	{
 		var titleArray = $("h1").text().split(" ("),
 			title = titleArray[0],
-			spaceTitle = title.replace(new RegExp(" ", 'g'), "+"),
+			spaceTitle = title.replace(new RegExp(" ", 'g'), "+").replace("&",""),
 			year = titleArray[1].substring(0,4),
 			imdb = $("a[target='imdb']").attr("href").split("title/")[1].slice(0,-1);
+
+	// pouze prihlaseni
+		if ($("a[href$='Logoff=true']").length)
+		{
+	//odkaz pro prime vyhledani dalsich verzi, pouze prihlase premium, zadny fulltext
+			$("a[href^='index.php?Fulltext']").after("<a title =\"Další verze titulků konkrétního filmu (pouze pro premium uživatele)\" class =\"plus-version\" href=\"http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ANazev="+title+"&ARelease=&ARok="+year+"\">Další přesné verze</a>");
+		}
+
 		searchMovieCsfd(spaceTitle,year);
 		searchMovieImdb(imdb);
 	}
+
+	// vysledky vyhledavani
+	if (location.href.indexOf("Fulltext") !== -1)
+	{
+		var search = $("#searchTitulky").val().toLowerCase();
+		if (search.length)
+		{
+			$.get("http://www.omdbapi.com/?s="+search,function(data) {
+				data = JSON.parse(data);
+				if (typeof data.Search !== "undefined")
+				{
+					var year = data["Search"][0]["Year"];
+				}
+				$(".soupis td:nth-child(1)").slice(1).filter(function() {
+					return $(this).text().trim().toLowerCase().replace(new RegExp(/ s\d{2}e\d{2}.*/), "") == search;
+				}).closest("tr").addClass("plus-topped")/*.insertBefore($(".soupis tr:nth-child(2)"))*/;
+				$(".plus-topped:first").attr("id","titulek").attr("name","titulek");
+				window.location.hash="titulek";
+			});
+		}
+	}
+
+	// vyhledavej vzdy naprimo, bez fulltextu
+	/*$("form[name='searchformsub']").submit(function(event){
+		window.location.href = "http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ARelease=&ARok=&ANazev="+$("#searchTitulky").val();
+		return false;
+	});*/
 });

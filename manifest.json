@@ -1,7 +1,7 @@
 {
 	"name": "Titulky plus",
 	"author": "Jan Richter aka richja",
-	"version": "0.0.1",
+	"version": "0.3",
 	"description": "Vylepšení webu titulky.com pro pohodlnější práci",
 	"manifest_version": 2,
 	"icons": {

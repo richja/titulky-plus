@@ -51,3 +51,27 @@
 .plus-rating-black {
 	background: #535353;
 }
+
+.plus-version {
+	margin-left: 10px;
+}
+
+.plus-topped.r1 td {
+	background: rgba(255,0,0,.2) !important;
+}
+
+.plus-topped.r td {
+	background: rgba(255,0,0,.1) !important;
+}
+
+.plus-search {
+	box-sizing: border-box;
+	position: absolute;
+	width: 298px;
+	left: 0px;
+	top: 205px;
+	-webkit-border-radius: 0 0 4px 4px !important;
+	border-radius: 0 0 4px 4px !important;
+	border: 1px solid #C1C1C1 !important;
+	border-top:none !important;
+}
