@@ -3,6 +3,7 @@ Zbývá udělat:
 - vypsat existenci (ano/ne) anglickych titulek k filmu z subtitleseeker api?
 - vytvořit vlastní API wrapper
 - pouzit CSFDapi v2 pro overeni nalezeni spravneho filmu dle IMDB
+- nastaveni vlastnich sablon pro automaticke predvyplneni u noveho zapisu do rozpracovanych a pridani novych titulku
 
 Hotovo:
 - u CSFD hodnoceni barevne odlisit pozadi (modre/cervene 70%+)

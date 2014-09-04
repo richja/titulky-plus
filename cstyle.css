@@ -75,3 +75,10 @@
 	border: 1px solid #C1C1C1 !important;
 	border-top:none !important;
 }
+
+.plus-date {
+	display: inline-block;
+	padding: 5px;
+	font-style: italic;
+	font-size: 11px;
+}

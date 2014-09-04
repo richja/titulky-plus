@@ -49,6 +49,8 @@ function makeMagicImdb (rating) {
 
 $(document).ready(function() {
 
+	if (location.href === "http://www.titulky.com/") $("#searchTitulky").focus();
+
 	// kdokoliv je prihlasen, odkaz na vytvoreni noveho prekladu
 		$("a[href$='Logoff=true']").closest("table").after("<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový překlad</a>");
 
@@ -75,8 +77,8 @@ $(document).ready(function() {
 			var title = $(titles[index]).text().split(" ("),
 				spaceTitle = title[0].replace(new RegExp(" ", 'g'), "+"),
 				imdb = $(records[index]).text().trim();
-			$(value).after("<td><a title =\"vyhledat titulky na subtitleseeker.com\" target =\"_blank\" href =\"http://www.subtitleseeker.com/"+imdb+"/"+spaceTitle+"/Subtitles/\">Subs</a></td>");
-			$(value).after("<td><a title =\"vyhledat film na ČSFD\" target =\"_blank\" href =\"http://www.csfd.cz/hledat/?q="+title[0]+"\">CSFD</a></td>");
+			$(value).after("<td><a title =\"Vyhledat titulky na subtitleseeker.com\" target =\"_blank\" href =\"http://www.subtitleseeker.com/"+imdb+"/"+spaceTitle+"/Subtitles/\">Subs</a></td>");
+			$(value).after("<td><a title =\"Vyhledat film na ČSFD\" target =\"_blank\" href =\"http://www.csfd.cz/hledat/?q="+title[0]+"\">CSFD</a></td>");
 		});
 	}
 
@@ -119,6 +121,30 @@ $(document).ready(function() {
 				window.location.hash="titulek";
 			});
 		}
+	}
+
+	// sekce novy preklad ci uprava ropracovaneho
+	if (location.href.indexOf("Preklad=0") !== -1)
+	{
+		$("input[name='SQLsAlternativniNazev']").css("width","200px");
+		$("#nazev1").css("width","300px");
+
+		// prida datum k odhadu dle poctu dni
+		$("input[name='SQLnOdhadDnu']").after("<div title =\"Odpovídající datum dokončení dle odhadu ve dnech\" class =\"plus-date\"></div>");
+
+		$("input[name='SQLnOdhadDnu']").keyup(function(){
+			var days = parseInt($("input[name='SQLnOdhadDnu']").val(),10);
+			date = new Date();
+			date.setDate(date.getDate() + days);
+			if (days)
+			{
+				$(".plus-date").text(date.getDate()+"."+(date.getMonth()+1)+"."+date.getFullYear());
+			}
+			else
+			{
+				$(".plus-date").text("");
+			}
+		});
 	}
 
 	// vyhledavej vzdy naprimo, bez fulltextu
