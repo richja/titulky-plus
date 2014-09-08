@@ -1,6 +1,8 @@
 #Titulky plus
 **Rozšíření do prohlížeče Google Chrome**
 
-Přidání odkazů pro vyhledávní filmů na ČSFD a jejich titulků na subtitleseeker.com do sekce Požadavky na titulky.com
+Spousta menších a větších úprav na webu titulky.com pro pohodlnější práci a lepší zážitek.
+Kompletní soupis úprav k nalezení v [detailu rozíření ve webstore](https://chrome.google.com/webstore/detail/titulky-plus/abgigldmglfimgechooinbdblfmipabb?hl=cs).
 
-*Především ušetří dost času při hledání nového filmu na překlad ;)*
+*Především pro překladatele, ale určitě potěší i normální návštěvníky*
+
