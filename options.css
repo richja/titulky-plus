@@ -1,0 +1,59 @@
+html {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #000;	
+	font-size: 16px;
+	margin-left: 10px;
+}
+
+h1, h2 {
+	border-radius: 4px;
+	padding: 5px 10px;
+	display: inline-block;
+	margin: 0 0 0 -10px;
+}
+
+h1 {
+	color: #fff;
+	background-color: #346792;
+	font-weight: bold;
+	font-size: 1.6em;
+}
+
+h2 {
+	background-color: #C6D6E3;
+	text-transform: uppercase;
+	font-size: 1.2em;
+	margin: 20px 0 5px -10px;
+	font-weight: normal;
+}
+
+#save {
+	padding: 5px 10px;
+	font-weight: bold;
+	background: rgb(221, 221, 221);
+	border: 1px solid silver;
+	margin: 2px 0px 2px 0px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+#save:hover {
+	background: #9DC8EB;
+}
+
+textarea {
+	width: 700px;
+	height: 150px;
+	margin-bottom: 10px;
+}
+
+#status {
+	color: rgb(0,128,0);
+	padding: 5px;
+	font-weight: bold;
+	display: inline-block;
+}
+
+i {
+	font-size: .7em;
+}

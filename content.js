@@ -47,8 +47,21 @@ function makeMagicImdb (rating) {
 	$("#contcont").prepend("<div title =\"hodnocení na IMDB\" class =\"plus-rating plus-rating-imdb "+ratingBg+"\"><a href=\""+url+"\" target=\"_blank\">"+rating+"</a></div>");
 }
 
+/*function getItems () {
+	chrome.storage.sync.get({
+		vyhledavani: false,
+		domu: true,
+		rozpracovane: '',
+		poznamky: ''
+	}, function(items) {
+		console.log(items);
+		return items;
+	});
+}*/
+
 $(document).ready(function() {
 
+	// aktivni input pro vyhledavani hned po nacteni
 	if (location.href === "http://www.titulky.com/") $("#searchTitulky").focus();
 
 	// kdokoliv je prihlasen, odkaz na vytvoreni noveho prekladu
@@ -124,32 +137,60 @@ $(document).ready(function() {
 	}
 
 	// sekce novy preklad ci uprava ropracovaneho
-	if (location.href.indexOf("Preklad=0") !== -1)
+	if (location.href.indexOf("Preklad=") !== -1)
 	{
 		$("input[name='SQLsAlternativniNazev']").css("width","200px");
 		$("#nazev1").css("width","300px");
 
-		// prida datum k odhadu dle poctu dni
-		$("input[name='SQLnOdhadDnu']").after("<div title =\"Odpovídající datum dokončení dle odhadu ve dnech\" class =\"plus-date\"></div>");
+	// sekce novy preklad (pouze)
+		if (location.href.indexOf("Preklad=0") !== -1)
+		{
+			chrome.storage.sync.get({
+				rozpracovane: '',
+			}, function(items) {
+				$("textarea[name='SQLsPoznamka']").text(items.rozpracovane);
+			});
 
-		$("input[name='SQLnOdhadDnu']").keyup(function(){
-			var days = parseInt($("input[name='SQLnOdhadDnu']").val(),10);
-			date = new Date();
-			date.setDate(date.getDate() + days);
-			if (days)
-			{
-				$(".plus-date").text(date.getDate()+"."+(date.getMonth()+1)+"."+date.getFullYear());
-			}
-			else
-			{
-				$(".plus-date").text("");
-			}
-		});
+			// prida datum k odhadu dle poctu dni
+			$("input[name='SQLnOdhadDnu']").after("<div title =\"Odpovídající datum dokončení dle odhadu ve dnech\" class =\"plus-date\"></div>");
+
+			$("input[name='SQLnOdhadDnu']").keyup(function(){
+				var days = parseInt($("input[name='SQLnOdhadDnu']").val(),10);
+				date = new Date();
+				date.setDate(date.getDate() + days);
+				if (days)
+				{
+					$(".plus-date").text(date.getDate()+"."+(date.getMonth()+1)+"."+date.getFullYear());
+				}
+				else
+				{
+					$(".plus-date").text("");
+				}
+			});
+		}
 	}
 
+	chrome.storage.sync.get({
+		vyhledavani: false,
+		domu: true,
+		rozpracovane: '',
+		poznamky: ''
+	}, function(items) {
+		console.log(items);
+		if (items.vyhledavani)
+		{
 	// vyhledavej vzdy naprimo, bez fulltextu
-	/*$("form[name='searchformsub']").submit(function(event){
-		window.location.href = "http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ARelease=&ARok=&ANazev="+$("#searchTitulky").val();
-		return false;
-	});*/
+			$("form[name='searchformsub']").submit(function(event){
+				window.location.href = "http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ARelease=&ARok=&ANazev="+$("#searchTitulky").val();
+				return false;
+			});
+		}
+
+		if (items.domu)
+		{
+	// tlacitko domu na kazde strance
+			$("#menu li:first").before("<li><a href =\"http://www.titulky.com\">Domů</a></li>");
+		}
+	});
+
 });

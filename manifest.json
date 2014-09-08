@@ -1,8 +1,9 @@
 {
 	"name": "Titulky plus",
+	"short_name": "Titulky+",
 	"author": "Jan Richter",
-	"version": "0.4",
-	"description": "Vylepšení webu titulky.com pro pohodlnější práci nejen pro překladatele.",
+	"version": "0.5",
+	"description": "Vylepšení webu titulky.com pro pohodlnější práci (nejen pro překladatele).",
 	"manifest_version": 2,
 	"icons": {
 		"16": "icon16.png",
@@ -18,5 +19,22 @@
 		"js": ["jquery.min.js","content.js"],
 		"css": ["cstyle.css"]
 	}
-	]
+	],
+	"page_action": {
+		"default_icon": "icon16.png",
+		"default_popup": "popup.html"
+	},
+	"options_page": "options.html",
+	"permissions": [
+		"tabs",
+		"declarativeContent",
+		"storage"
+	],
+	"background": {
+		"scripts": [
+			"background.js"
+		],
+		"persistent": false
+	},
+	"minimum_chrome_version": "33.0.0"
 }
