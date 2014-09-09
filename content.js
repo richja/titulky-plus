@@ -176,7 +176,6 @@ $(document).ready(function() {
 		rozpracovane: '',
 		poznamky: ''
 	}, function(items) {
-		console.log(items);
 		if (items.vyhledavani)
 		{
 	// vyhledavej vzdy naprimo, bez fulltextu
@@ -190,6 +189,20 @@ $(document).ready(function() {
 		{
 	// tlacitko domu na kazde strance
 			$("#menu li:first").before("<li><a href =\"http://www.titulky.com\">Domů</a></li>");
+		}
+
+	// sablona poznamek pro nove vlozeny titulek
+		if (location.href.indexOf("http://premium.titulky.com/index.php?Set=") !== -1)
+		{
+			if ($("textarea[name='SQLsNote']").val())
+			{
+				console.log("plne");
+			}
+			else
+			{
+				$("textarea[name='SQLsNote']").val(items.poznamky);
+				console.log("prazdne");
+			}
 		}
 	});
 
