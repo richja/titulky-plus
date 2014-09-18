@@ -214,12 +214,19 @@ $(document).ready(function() {
 	// pouze prihlaseni
 		if ($("a[href$='Logoff=true']").length)
 		{
-	//odkaz pro prime vyhledani dalsich verzi, pouze prihlase premium, zadny fulltext
+	// odkaz pro prime vyhledani dalsich verzi, pouze prihlase premium, zadny fulltext
 			$("a[href^='index.php?Fulltext']").after("<a title =\"Další verze titulků konkrétního filmu (pouze pro premium uživatele)\" class =\"plus-version\" href=\"http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ANazev="+title+"&ARelease=&ARok="+year+"\">Další přesné verze</a>");
 		}
 
 		searchMovieCsfd(spaceTitle,year,"makeMagicCsfd");
 		searchMovieImdb(imdb);
+	}
+
+	// ropracovane detail
+	if (location.href.indexOf("Stat=5&item=") !== -1)
+	{
+		var link = $($(".soupis .row2").children()[5]).children().attr("href");
+		$(".soupis").before("<a class =\"tlacitko plus-state-update\" href ="+link+">Aktualizovat stav překladu</a>");
 	}
 
 	// vysledky vyhledavani
@@ -243,21 +250,6 @@ $(document).ready(function() {
 				window.location.hash="titulek";
 			});
 		}
-	}
-
-	// vysledky hledani (fulltext i prime)
-	if (location.href.indexOf("Fulltext") !== -1 || location.href.indexOf("Searching") !== -1)
-	{
-		$(".soupis tr").slice(1).each(function(index,value)
-		{
-			$(value).after("<tr class =\"plus-release\"><td colspan=\"10\">"+$(".fixedTip").eq(index).attr("title")+"</td></tr>");
-		});
-
-		$(".soupis").before("<label><input type=\"checkbox\" id=\"ukazovatko\" name =\"ukazovatko\" checked=\"checked\"><span class =\"plus-switcher-label\">Zobrazit/skrýt verze</span></label>");
-
-		$("#ukazovatko").change(function(){
-			$(".plus-release").toggle();
-		});
 	}
 
 	// sekce novy preklad ci uprava ropracovaneho
@@ -300,8 +292,45 @@ $(document).ready(function() {
 		premium: false,
 		hlavicka: false,
 		rozpracovane: '',
-		poznamky: ''
+		poznamky: '',
+		release: true
 	}, function(items) {
+		// console.log(items);
+
+	// vysledky hledani (fulltext i prime)
+		if (location.href.indexOf("Fulltext") !== -1 || location.href.indexOf("Searching") !== -1)
+		{
+			$(".soupis").before("<label><input type=\"checkbox\" id=\"ukazovatko\" name =\"ukazovatko\"><span class =\"plus-switcher-label\">Zobrazit/skrýt verze</span></label>");
+
+			$(".soupis tr td:nth-child(2)").slice(1).each(function(index,value)
+			{
+				var release = $(value,value).find(".fixedTip").attr("title");
+				if (typeof release === "undefined")	release = "";
+
+				if (release !== "")
+				{
+					$(".r,.r1").eq(index).after("<tr class =\"plus-release\"><td colspan=\"10\">"+release+"</td></tr>");
+				}
+
+				if (items.release)
+				{
+					$("#ukazovatko").prop("checked",true);
+				}
+				else {
+					$(".plus-release").hide();
+				}
+			});
+
+			$("#ukazovatko").change(function(){
+
+				var switcher = $(this).prop("checked");
+
+				chrome.storage.sync.set({
+					release: switcher,
+				});
+				$(".plus-release").toggle();
+			});
+		}
 
 	// pridej hlavicku webu
 		if (items.hlavicka && !$("#head_a").length)
