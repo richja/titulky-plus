@@ -2,12 +2,16 @@
 function save_options() {
 	var vyhledavani = document.getElementById('vyhledavani').checked;
 	var domu = document.getElementById('domu').checked;
+	var premium = document.getElementById('premium').checked;
+	var hlavicka = document.getElementById('hlavicka').checked;
 	var rozpracovane = document.getElementById('rozpracovane').value;
 	var poznamky = document.getElementById('poznamky').value;
 
 	chrome.storage.sync.set({
 		vyhledavani: vyhledavani,
 		domu: domu,
+		premium: premium,
+		hlavicka: hlavicka,
 		rozpracovane: rozpracovane,
 		poznamky: poznamky
 	}, function() {
@@ -27,13 +31,17 @@ function restore_options() {
 	chrome.storage.sync.get({
 		vyhledavani: false,
 		domu: true,
+		premium: false,
+		hlavicka: false,
 		rozpracovane: '',
 		poznamky: ''
 	}, function(items) {
-		document.getElementById("rozpracovane").value = items.rozpracovane;
-		document.getElementById("poznamky").value = items.poznamky;
 		document.getElementById('vyhledavani').checked = items.vyhledavani;
 		document.getElementById("domu").checked = items.domu;
+		document.getElementById("premium").checked = items.premium;
+		document.getElementById("hlavicka").checked = items.hlavicka;
+		document.getElementById("rozpracovane").value = items.rozpracovane;
+		document.getElementById("poznamky").value = items.poznamky;
 	});
 }
 document.addEventListener('DOMContentLoaded', restore_options);

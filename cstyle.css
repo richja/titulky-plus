@@ -82,3 +82,20 @@
 	font-style: italic;
 	font-size: 11px;
 }
+
+.plus-release {
+	vertical-align: sub;
+	font-style: italic;
+}
+
+.plus-autocomplete {
+	vertical-align: top;
+}
+
+.plus-right {
+	float: right;
+}
+
+.plus-switcher-label {
+	vertical-align: super;
+}
