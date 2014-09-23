@@ -20,9 +20,10 @@ function searchMovieImdb (imdb) {
 	$.get("http://www.omdbapi.com/?i="+imdb,function(data) {
 		data = JSON.parse(data);
 		if (data.imdbRating) {
+			searchMovieCsfd(spaceTitle(data.Title),data.Year.slice(0,4),"makeMagicCsfd");
 			makeMagicImdb(data.imdbRating);
 		}
-	});
+	});	
 }
 
 
@@ -48,7 +49,7 @@ function autocompleteByTitle (title) {
 		var result = JSON.parse(data);
 		if (!result.Response) return;
 		console.log(result);
-		$("input[name='SQLnRokUvedeni']").val(result.Year);
+		$("input[name='SQLnRokUvedeni']").val(result.Year.slice(0,4));
 		$("input[name='SQLsIMDB']").val(result.imdbID.slice(2));
 		$("#side1cont").prepend("<div class=\"tab plus-poster\">PLAKÁT</div><img src =\""+result.Poster+"\">");
 
@@ -218,15 +219,15 @@ $(document).ready(function() {
 			$("a[href^='index.php?Fulltext']").after("<a title =\"Další verze titulků konkrétního filmu (pouze pro premium uživatele)\" class =\"plus-version\" href=\"http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ANazev="+title+"&ARelease=&ARok="+year+"\">Další přesné verze</a>");
 		}
 
-		searchMovieCsfd(spaceTitle,year,"makeMagicCsfd");
+		// searchMovieCsfd(spaceTitle,year,"makeMagicCsfd");
 		searchMovieImdb(imdb);
 	}
 
 	// ropracovane detail
 	if (location.href.indexOf("Stat=5&item=") !== -1)
 	{
-		var link = $($(".soupis .row2").children()[5]).children().attr("href");
-		$(".soupis").before("<a class =\"tlacitko plus-state-update\" href ="+link+">Aktualizovat stav překladu</a>");
+		var link = $($(".soupis .row2").children()[6]).children().attr("href");
+		$(".soupis").eq(1).before("<a class =\"tlacitko plus-state-update\" href ="+link+">Aktualizovat stav překladu</a>");
 	}
 
 	// vysledky vyhledavani
@@ -353,7 +354,8 @@ $(document).ready(function() {
 		if (items.domu)
 		{
 	// tlacitko domu na kazde strance
-			$("#menu li:first").before("<li><a href =\"http://www.titulky.com\">Domů</a></li>");
+			// $("#menu li:first").before("<li><a href =\"http://www.titulky.com\">Domů</a></li>");
+			$("#menu li a:first").text("Domů");
 		}
 
 		if (items.premium)
