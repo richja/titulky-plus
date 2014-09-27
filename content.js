@@ -23,7 +23,7 @@ function searchMovieImdb (imdb) {
 			searchMovieCsfd(spaceTitle(data.Title),data.Year.slice(0,4),"makeMagicCsfd");
 			makeMagicImdb(data.imdbRating);
 		}
-	});	
+	});
 }
 
 
@@ -32,7 +32,7 @@ function spaceTitle (title) {
 }
 
 function clearTitle (title) {
-	return title.split( / s\d{2}e\d{2}.*/i)[0];
+	return title.split(/s\d{2}e\d{2}.*/i)[0];
 }
 
 function addCsfdLink(data) {
@@ -42,13 +42,31 @@ function addCsfdLink(data) {
 	});
 }
 
+/*function isTvSeries (title) {
+	var pattern = /(s\d{2}e\d{2}.*)/i,
+		matches = pattern.exec(title);
+	console.log(title, matches);
+	if (matches && matches.length > 1)
+	{
+		return matches[0];
+	}
+	else return false;
+}*/
+
 function autocompleteByTitle (title) {
 	$(".plus-poster,.plus-poster + img").remove();
 	title = clearTitle(title);
-	$.get("http://www.omdbapi.com/?t="+title,function(data) {
+	var query = "http://www.omdbapi.com/?t="+title;
+
+	if ($("input[name='SQLnRokUvedeni']").val().length > 0)
+	{
+		query = "http://www.omdbapi.com/?t="+title+"&y="+$("input[name='SQLnRokUvedeni']").val();
+	}
+
+	$.get(query,function(data) {
 		var result = JSON.parse(data);
-		if (!result.Response) return;
-		console.log(result);
+		if (result.Response === "False") return;
+		// console.log(result);
 		$("input[name='SQLnRokUvedeni']").val(result.Year.slice(0,4));
 		$("input[name='SQLsIMDB']").val(result.imdbID.slice(2));
 		$("#side1cont").prepend("<div class=\"tab plus-poster\">PLAKÁT</div><img src =\""+result.Poster+"\">");
@@ -62,7 +80,35 @@ function autocompleteByTitle (title) {
 		$("input[name='SQLnSerialSezona']").val(parseInt(matches[1],10));
 		$("input[name='SQLnSerialEpizoda']").val(parseInt(matches[2],10));
 	}
+
+	searchMovieCsfd(spaceTitle(result.Title),result.Year.slice(0,4),"findAlternativeTitle");
+
 	});
+}
+
+function findAlternativeTitle (data) {
+	var rawTitle = $("input[name='SQLsNazev']").val();
+	title = clearTitle(rawTitle);
+	if (typeof data.names === "object")
+	{
+		for (var prop in data.names)
+		{
+			if (data.names[prop] !== title)
+			{
+				if ($("input[name='SQLnSerialSezona']").val() && $("input[name='SQLnSerialEpizoda']").val())
+				{
+					var session = ($("input[name='SQLnSerialSezona']").val() <= 9) ? "0"+$("input[name='SQLnSerialSezona']").val():$("input[name='SQLnSerialSezona']").val();
+					var episode = ($("input[name='SQLnSerialEpizoda']").val() <= 9) ? "0"+$("input[name='SQLnSerialEpizoda']").val():$("input[name='SQLnSerialEpizoda']").val();
+					$("input[name='SQLsPuvodniNazev']").val(data.names[prop] + " S" + session + "E"+episode);
+				}
+				else
+				{
+					$("input[name='SQLsPuvodniNazev']").val(data.names[prop]);
+				}
+				return;
+			}
+		}
+	}
 }
 
 function makeMagicCsfd (data) {
@@ -108,7 +154,7 @@ $(document).ready(function() {
 	if (location.href === "http://www.titulky.com/") $("#searchTitulky").focus();
 
 	// kdokoliv je prihlasen, odkaz na vytvoreni noveho prekladu
-	$("a[href$='Logoff=true']").closest("table").after("<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový překlad</a>");
+	$("#tablelogon a[href$='Logoff=true']").closest("table").after("<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový překlad</a>");
 
 	// pouze prihlaseni
 	if ($("a[href$='Logoff=true']").length)
@@ -182,12 +228,6 @@ $(document).ready(function() {
 					}
 				});
 
-				/*console.log(titles.filter(function(item){
-					return item.indexOf("Le Week-End") > -1;
-					// return item.indexOf($(value).text()) > -1;
-				}));
-				*/
-
 				$(list).each(function (index,value) {
 					if (titles.indexOf(value) !== -1)
 					{
@@ -227,7 +267,10 @@ $(document).ready(function() {
 	if (location.href.indexOf("Stat=5&item=") !== -1)
 	{
 		var link = $($(".soupis .row2").children()[6]).children().attr("href");
-		$(".soupis").eq(1).before("<a class =\"tlacitko plus-state-update\" href ="+link+">Aktualizovat stav překladu</a>");
+		if (link !== "javascript://")
+		{
+			$(".soupis").eq(1).before("<a class =\"tlacitko plus-state-update\" href ="+link+">Aktualizovat stav překladu</a>");
+		}
 	}
 
 	// vysledky vyhledavani
@@ -285,6 +328,37 @@ $(document).ready(function() {
 				}
 			});
 		}
+	}
+
+// sekce nahrani novych titlku - prvni krok
+	if (location.href.indexOf("premium.titulky.com/index.php?Nahrat=1") !== -1)
+	{
+		// u velikosti titulku umaze 
+		$("input[name^='VelikostFilmu']").change(function(){
+			$(this).val($(this).val().replace(/[^\d]/g,""));
+		});
+	}
+
+// FORUM
+	$("#stat_bok_v span a").each(function(index,value)
+	{
+		$("#stat_bok_v span a").eq(index).attr("href",$(value).attr("href")+"#"+$(value).text().trim().slice(0,5)) ;
+	});
+
+	if (location.href.indexOf("film=1&Prispevek") !== -1 && location.href.indexOf("#") !== -1)
+	{
+		// window.location.hash="";
+		console.log(location.href.split("#")[1]);
+		var hash = location.href.split("#")[1];
+		$(".detailv td").each(function(index,value){
+			if ($(value).text().indexOf(hash) > 0)
+			{
+				$('html, body').animate({
+					scrollTop: $(".detailv").eq(index).prev().offset().top
+				}, 1000);
+			}
+			return;
+		});
 	}
 
 	chrome.storage.sync.get({
@@ -354,8 +428,8 @@ $(document).ready(function() {
 		if (items.domu)
 		{
 	// tlacitko domu na kazde strance
-			// $("#menu li:first").before("<li><a href =\"http://www.titulky.com\">Domů</a></li>");
-			$("#menu li a:first").text("Domů");
+			$("#menu li:first").before("<li><a href =\"http://www.titulky.com\">Domů</a></li>");
+			// $("#menu li a:first").text("Domů");
 		}
 
 		if (items.premium)
@@ -370,7 +444,7 @@ $(document).ready(function() {
 		if (location.href.indexOf("http://premium.titulky.com/index.php?Set=") !== -1)
 		{
 	// sablona poznamek pro nove vlozeny titulek
-			$("input[name='SQLsNazev']").after("<input type=\"button\" class=\"button plus-autocomplete\" value=\"Automaticky vyplnit\" title =\"Automaticky vyplní rok a IMDB číslo dle názvu filmu\">");
+			$("input[name='SQLsNazev']").after("<input type=\"button\" class=\"button plus-autocomplete\" value=\"Automaticky vyplnit\" title =\"Automaticky doplní údaje názvu filmu (pro přesnější výsledky předvyplňte rok)\">");
 
 			$(".plus-autocomplete").click(function() {
 				autocompleteByTitle($("input[name='SQLsNazev']").val());
