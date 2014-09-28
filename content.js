@@ -16,11 +16,12 @@ function searchMovieCsfd (title,year,caller) {
 	});
 }
 
-function searchMovieImdb (imdb) {
+function searchMovieImdb (imdb,title) {
 	$.get("http://www.omdbapi.com/?i="+imdb,function(data) {
 		data = JSON.parse(data);
 		if (data.imdbRating) {
-			searchMovieCsfd(spaceTitle(data.Title),data.Year.slice(0,4),"makeMagicCsfd");
+			searchMovieCsfd(title,data.Year.slice(0,4),"makeMagicCsfd");
+			// searchMovieCsfd(spaceTitle(data.Title),data.Year.slice(0,4),"makeMagicCsfd");
 			makeMagicImdb(data.imdbRating);
 		}
 	});
@@ -136,6 +137,54 @@ function makeMagicImdb (rating) {
 	$("#contcont").prepend("<div title =\"hodnocení na IMDB\" class =\"plus-rating plus-rating-imdb "+ratingBg+"\"><a href=\""+url+"\" target=\"_blank\">"+rating+"</a></div>");
 }
 
+function searchForumForHash (lengthValue,hashValue) {
+	var hash = location.href.split("#")[1];
+	if (typeof hashValue === "string") hash = hashValue;
+	$(".detailv td").each(function(index,value){
+		if ($(value).text().trim().slice(0,lengthValue) == hash)
+		{
+			$('html, body').animate({
+				scrollTop: $(".detailv").eq(index).prev().offset().top
+			}, 1000,"linear",function(){
+				$(".detailv").eq(index).children().addClass("plus-animate-post");
+			});
+		}
+		return;
+	});
+}
+
+function getUserId () {
+	var pattern = /(\d{1,10})/,
+		matches = pattern.exec($("#tablelogon a[title='Info']").attr("onclick"));
+	return matches[0];
+}
+
+function isActiveTranslator () {
+	return ($("#tablelogon img").eq(1).attr("src") && $("#tablelogon img").eq(1).attr("src") !== "./img/stars/0.gif") ? true : false;
+}
+
+function updateCommentFeed (lastVisit) {
+	var counter = 0;
+	$("#side1wrap ul:nth-child(4) li").each(function(index,value) {
+		var pattern = /([^\[][^\]]*)/,
+			matches = pattern.exec($(value).text()),
+			dateSplit = matches[0].split("."),
+			day = dateSplit[0],
+			month = dateSplit[1]-1,
+			lastSeq = dateSplit[2].split(" "),
+			year = lastSeq[0],
+			time = lastSeq[1].split(":"),
+			hours = time[0],
+			minutes = time[1],
+			timestamp = new Date(year, month, day, hours, minutes).getTime();
+
+		if (1405364580000 < timestamp)
+		{
+			counter++;
+		}
+	});
+}
+
 /*function getItems () {
 	chrome.storage.sync.get({
 		vyhledavani: false,
@@ -149,7 +198,6 @@ function makeMagicImdb (rating) {
 }*/
 
 $(document).ready(function() {
-
 	// aktivni input pro vyhledavani hned po nacteni
 	if (location.href === "http://www.titulky.com/") $("#searchTitulky").focus();
 
@@ -165,6 +213,19 @@ $(document).ready(function() {
 			return false;
 		});
 		$("#tablesearch").css("margin-bottom","20px");
+	}
+
+	// sekce profil uzivatele
+	if (location.href.indexOf("UserDetail=") !== -1)
+	{
+		// jedna se o vlastni profil uzivatele
+		var userId = getUserId();
+		if (location.href.indexOf(userId) > 0 || location.href.indexOf("UserDetail=me"))
+		{
+			chrome.storage.sync.set({
+				navstevaProfilu: +Date.now()
+			});
+		}
 	}
 
 	// sekce pozadavky
@@ -260,7 +321,7 @@ $(document).ready(function() {
 		}
 
 		// searchMovieCsfd(spaceTitle,year,"makeMagicCsfd");
-		searchMovieImdb(imdb);
+		searchMovieImdb(imdb,title);
 	}
 
 	// ropracovane detail
@@ -330,7 +391,7 @@ $(document).ready(function() {
 		}
 	}
 
-// sekce nahrani novych titlku - prvni krok
+// sekce nahrani novych titulku - prvni krok
 	if (location.href.indexOf("premium.titulky.com/index.php?Nahrat=1") !== -1)
 	{
 		// u velikosti titulku umaze 
@@ -340,24 +401,23 @@ $(document).ready(function() {
 	}
 
 // FORUM
+	var lengthValue = 5;
+	// prida hash ke vzkazum na foru
 	$("#stat_bok_v span a").each(function(index,value)
 	{
-		$("#stat_bok_v span a").eq(index).attr("href",$(value).attr("href")+"#"+$(value).text().trim().slice(0,5)) ;
+		$("#stat_bok_v span a").eq(index).attr("href",$(value).attr("href")+"#"+$(value).text().trim().slice(0,lengthValue)) ;
 	});
 
+	// dle shody hashe a obsahu prispevku sroluje na dany prispevek
 	if (location.href.indexOf("film=1&Prispevek") !== -1 && location.href.indexOf("#") !== -1)
 	{
-		// window.location.hash="";
-		console.log(location.href.split("#")[1]);
-		var hash = location.href.split("#")[1];
-		$(".detailv td").each(function(index,value){
-			if ($(value).text().indexOf(hash) > 0)
+		searchForumForHash(lengthValue);
+		$("#stat_bok_v span a").click(function(){
+			if ($(this).attr("href").indexOf(location.search) > 0)
 			{
-				$('html, body').animate({
-					scrollTop: $(".detailv").eq(index).prev().offset().top
-				}, 1000);
+				searchForumForHash(lengthValue,$(this).attr("href").split("#")[1]);
+				return false;
 			}
-			return;
 		});
 	}
 
@@ -368,9 +428,22 @@ $(document).ready(function() {
 		hlavicka: false,
 		rozpracovane: '',
 		poznamky: '',
-		release: true
+		release: true,
+		navstevaProfilu: false,
+		cacheIntervalProfil: 60*60*1000
 	}, function(items) {
-		// console.log(items);
+		console.log(items.navstevaProfilu);
+
+	if (isActiveTranslator())
+	{
+		console.log(new Date (items.navstevaProfilu),new Date (items.navstevaProfilu+items.cacheIntervalProfil),new Date());
+		if (items.navstevaProfilu === false || items.navstevaProfilu <= +Date.now())
+		// if (items.navstevaProfilu === false || items.navstevaProfilu+items.cacheIntervalProfil < +Date.now())
+		{
+			console.log("cas na update");
+			updateCommentFeed(items.navstevaProfilu);
+		}
+	}
 
 	// vysledky hledani (fulltext i prime)
 		if (location.href.indexOf("Fulltext") !== -1 || location.href.indexOf("Searching") !== -1)

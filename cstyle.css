@@ -68,7 +68,7 @@
 	box-sizing: border-box;
 	position: absolute;
 	width: 298px;
-	left: 0px;
+	left: 0;
 	top: 205px;
 	-webkit-border-radius: 0 0 4px 4px !important;
 	border-radius: 0 0 4px 4px !important;
@@ -107,4 +107,21 @@
 .plus-state-update,.plus-state-update:visited {
 	color: #ff0000;
 	margin: 10px 0;
+}
+
+.plus-animate-post {
+	-webkit-animation: fading 4s; /* Chrome, Safari, Opera */
+	animation: fading 4s;
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes fading {
+	from {background: rgba(255, 0, 0, 0.2);}
+	to {background: #E2E2E2;}
+}
+
+/* Standard syntax */
+@keyframes fading {
+	from {background: rgba(255, 0, 0, 0.2);}
+	to {background: #E2E2E2;}
 }
