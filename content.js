@@ -163,26 +163,63 @@ function isActiveTranslator () {
 	return ($("#tablelogon img").eq(1).attr("src") && $("#tablelogon img").eq(1).attr("src") !== "./img/stars/0.gif") ? true : false;
 }
 
-function updateCommentFeed (lastVisit) {
-	var counter = 0;
-	$("#side1wrap ul:nth-child(4) li").each(function(index,value) {
-		var pattern = /([^\[][^\]]*)/,
-			matches = pattern.exec($(value).text()),
-			dateSplit = matches[0].split("."),
-			day = dateSplit[0],
-			month = dateSplit[1]-1,
-			lastSeq = dateSplit[2].split(" "),
-			year = lastSeq[0],
-			time = lastSeq[1].split(":"),
-			hours = time[0],
-			minutes = time[1],
-			timestamp = new Date(year, month, day, hours, minutes).getTime();
+function addNewPostCounter (counter) {
+	$("#tablelogon").after("<a href =\"http://www.titulky.com/index.php?UserDetail=me\" title =\"Nepřečtených komentářů pod vašimi titulky\" class =\"plus-unread-count\">"+counter+"</a>");
+	if (counter > 0)
+	{
+		$("plus-unread-count").addClass("plus-unread-count-red");
+	}
+}
 
-		if (1405364580000 < timestamp)
-		{
-			counter++;
-		}
+function updateCommentFeed (lastVisit) {
+
+	$.get("http://www.titulky.com/index.php?UserDetail=me",function(data) {
+
+		var rawHTML = document.createElement('div');
+		rawHTML.innerHTML = data;
+
+		var counter = 0;
+		$(rawHTML).find("#side1wrap ul:nth-child(4) li").each(function(index, value) {
+			var pattern = /([^\[][^\]]*)/,
+				matches = pattern.exec($(value).text()),
+				dateSplit = matches[0].split("."),
+				day = dateSplit[0],
+				month = dateSplit[1]-1,
+				lastSeq = dateSplit[2].split(" "),
+				year = lastSeq[0],
+				time = lastSeq[1].split(":"),
+				hours = time[0],
+				minutes = time[1],
+				timestamp = new Date(year, month, day, hours, minutes).getTime();
+
+			// if (1405364580000 < timestamp)
+			if (lastVisit < timestamp)
+			{
+				counter++;
+			}
+			else return false;
+		});
+		// console.log(new Date(lastVisit),counter);
+		chrome.storage.sync.set({
+			navstevaProfilu: +Date.now(),
+			novychZprav: counter
+		},function(){
+			addNewPostCounter(counter);
+		});
 	});
+}
+
+function highlightNewPosts (counter) {
+	$("#side1wrap ul:nth-child(4) li").each(function(index,value) {
+
+		if (index < counter)
+		{
+			console.log("hoj");
+			$("#side1wrap ul:nth-child(4) li").eq(index).prepend("<span class =\"plus-new-post\">NOVÉ</span>");
+		}
+		else return;
+	});
+	
 }
 
 /*function getItems () {
@@ -213,19 +250,6 @@ $(document).ready(function() {
 			return false;
 		});
 		$("#tablesearch").css("margin-bottom","20px");
-	}
-
-	// sekce profil uzivatele
-	if (location.href.indexOf("UserDetail=") !== -1)
-	{
-		// jedna se o vlastni profil uzivatele
-		var userId = getUserId();
-		if (location.href.indexOf(userId) > 0 || location.href.indexOf("UserDetail=me"))
-		{
-			chrome.storage.sync.set({
-				navstevaProfilu: +Date.now()
-			});
-		}
 	}
 
 	// sekce pozadavky
@@ -430,20 +454,37 @@ $(document).ready(function() {
 		poznamky: '',
 		release: true,
 		navstevaProfilu: false,
-		cacheIntervalProfil: 60*60*1000
+		// cacheIntervalProfil: 1*60*60*1000,
+		novychZprav: 0
 	}, function(items) {
-		console.log(items.navstevaProfilu);
+		// console.log(items);
 
-	if (isActiveTranslator())
-	{
-		console.log(new Date (items.navstevaProfilu),new Date (items.navstevaProfilu+items.cacheIntervalProfil),new Date());
-		if (items.navstevaProfilu === false || items.navstevaProfilu <= +Date.now())
-		// if (items.navstevaProfilu === false || items.navstevaProfilu+items.cacheIntervalProfil < +Date.now())
+		if (isActiveTranslator())
 		{
-			console.log("cas na update");
-			updateCommentFeed(items.navstevaProfilu);
+			var time = 1*15*60*1000; // 15 minut
+			// console.log(time,new Date (items.navstevaProfilu),new Date (items.navstevaProfilu+time),new Date());
+			// if (items.navstevaProfilu === false || items.navstevaProfilu <= +Date.now())
+			if (items.navstevaProfilu === false || items.navstevaProfilu+time < +Date.now())
+			{
+				updateCommentFeed(items.navstevaProfilu);
+			}
+			else addNewPostCounter(items.novychZprav);
 		}
-	}
+
+	// sekce profil uzivatele
+		if (location.href.indexOf("UserDetail=") !== -1)
+		{
+			// jedna se o vlastni profil uzivatele
+			var userId = getUserId();
+			if (location.href.indexOf(userId) > 0 || location.href.indexOf("UserDetail=me"))
+			{
+				highlightNewPosts(items.novychZprav);
+
+				chrome.storage.sync.set({
+					navstevaProfilu: +Date.now()
+				});
+			}
+		}
 
 	// vysledky hledani (fulltext i prime)
 		if (location.href.indexOf("Fulltext") !== -1 || location.href.indexOf("Searching") !== -1)

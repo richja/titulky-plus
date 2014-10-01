@@ -125,3 +125,30 @@
 	from {background: rgba(255, 0, 0, 0.2);}
 	to {background: #E2E2E2;}
 }
+
+.plus-unread-count, .plus-unread-count:visited {
+	position: absolute;
+	display: block;
+	border-radius: 4px;
+	background: #DDDDDD;
+	font-size: 13px;
+	padding: 5px;
+	right: 12px;
+	top: 70px;
+	font-weight: bold;
+}
+
+.plus-unread-count-red {
+	color: #FF0000;
+}
+
+.plus-unread-count:hover {
+	text-decoration: none;
+	background: #DDDDDD;
+}
+
+.plus-new-post {
+	font-weight: bold;
+	padding-right: 5px;
+}
+
