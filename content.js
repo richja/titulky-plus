@@ -256,7 +256,7 @@ $(document).ready(function() {
 		$("#tablesearch").css("margin-bottom","20px");
 	}
 
-	// sekce pozadavky
+	// sekce pozadavky --------------------------------------------------
 	if (location.href.indexOf("Stat=6") !== -1)
 	{
 		$(".detailh:first").text("Poslední").attr("width",70);
@@ -269,11 +269,51 @@ $(document).ready(function() {
 				spaceTitle = title[0].replace(new RegExp(" ", 'g'), "+"),
 				imdb = $(records[index]).text().trim();
 			$(value).after("<td><a title =\"Vyhledat titulky na subtitleseeker.com\" target =\"_blank\" href =\"http://www.subtitleseeker.com/"+imdb+"/"+spaceTitle+"/Subtitles/\">Subs</a></td>");
-			$(value).after("<td><a title =\"Vyhledat film na ČSFD\" target =\"_blank\" href =\"http://www.csfd.cz/hledat/?q="+title[0]+"\">CSFD</a></td>");
+			$(value).after("<td><a class =\"plus-csfd\" title =\"Vyhledat film na ČSFD\" target =\"_blank\" href =\"http://www.csfd.cz/hledat/?q="+title[0]+"\">CSFD</a></td>");
+		});
+
+		var imdbs = [];
+		// imdbs.push($(".soupis a[target='imdb']").first().text());
+
+		$(".soupis a[target='imdb']").each(function(index, value)
+		{
+			imdbs.push($(value).text());
+		});
+
+	// pozadavky - dopln hodnoceni k filmum
+		// console.log(imdbs);
+		$.getJSON("http://79.143.181.180/titulky/",{multi: true, imdb: imdbs.join()},function(response)
+		{
+			var ratingBg = "plus-rating-blue";
+			if (response.data.csfd_r >= 70) ratingBg = "plus-rating-red"
+			else if (response.data.csfd_r <= 30) ratingBg = "plus-rating-black"
+
+			console.log(response.index,response.data);
+
+			$(".plus-csfd")
+				.eq(response.index)
+				.attr("href",response.data.csfd_url)
+				.text(response.data.csfd_r)
+				.parent()
+				.addClass(ratingBg+" plus-cell-rating");
+
+			ratingBg = "plus-rating-blue";
+			if (response.data.imdb_r >= 7.0) ratingBg = "plus-rating-red"
+			else if (response.data.imdb_r <= 3.0) ratingBg = "plus-rating-black"
+
+			$(".plus-csfd")
+				.eq(response.index)
+				.parent()
+				.prev()
+				.children()
+				.text(response.data.imdb_r)
+				.addClass("plus-imdb")
+				.parent()
+				.addClass(ratingBg+" plus-cell-rating");
 		});
 	}
 
-	// sekce vlastní pozadavky
+	// sekce vlastní pozadavky ------------------------------------------
 	if (location.href.indexOf("PozadavekTitulku=") !== -1)
 	{
 		// get list of wanted movies
@@ -286,8 +326,8 @@ $(document).ready(function() {
 				list.push($(value).text().split(pattern)[0].toLowerCase());
 			});
 
-			$.get("http://www.titulky.com/index.php?Stat=5",function(data) {
-
+			$.get("http://www.titulky.com/index.php?Stat=5",function(data)
+			{
 				var rawHTML = document.createElement('div'),
 					links = [],
 					titles = [],
@@ -501,7 +541,7 @@ $(document).ready(function() {
 			$(".soupis tr td:nth-child(2)").slice(1).each(function(index,value)
 			{
 				var release = $(value,value).find(".fixedTip").attr("title");
-				if (typeof release === "undefined")	release = "";
+				if (typeof release === "undefined") release = "";
 
 				if (release !== "")
 				{

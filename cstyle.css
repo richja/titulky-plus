@@ -2,6 +2,7 @@
 	position: relative;
 }
 
+
 .plus-new {
 	position: absolute;
 	display: block;
@@ -40,16 +41,29 @@
 	color: #FFF !important;
 }
 
+.plus-csfd, .plus-imdb {
+}
+
 .plus-rating-blue {
-	background: #658DB4;
+	background: #658DB4 !important;
 }
 
 .plus-rating-red {
-	background: #BB0011;
+	background: #BB0011 !important;
 }
 
 .plus-rating-black {
-	background: #535353;
+	background: #535353 !important;
+}
+
+.plus-cell-rating {
+	padding-left: 0 !important;
+	text-align: center !important;
+	font-weight: bold !important;
+}
+
+.plus-cell-rating a {
+	color: #FFF !important;
 }
 
 .plus-version {
@@ -152,4 +166,3 @@
 	padding-right: 5px;
 	color: #FF0000;
 }
-
