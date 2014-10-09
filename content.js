@@ -137,7 +137,7 @@ function makeMagicImdb (rating) {
 	$("#contcont").prepend("<div title =\"hodnocení na IMDB\" class =\"plus-rating plus-rating-imdb "+ratingBg+"\"><a href=\""+url+"\" target=\"_blank\">"+rating+"</a></div>");
 }
 
-function searchForumForHash (lengthValue,hashValue) {
+/*function searchForumForHashOld (lengthValue,hashValue) {
 	var hash = location.href.split("#")[1];
 	if (typeof hashValue === "string") hash = hashValue;
 	$(".detailv td").each(function(index,value){
@@ -151,6 +151,11 @@ function searchForumForHash (lengthValue,hashValue) {
 		}
 		return;
 	});
+}*/
+
+function searchForumForHash () {
+	var hash = location.hash;
+	$(hash).parent().next().children().addClass("plus-animate-post");
 }
 
 function getUserId () {
@@ -167,7 +172,7 @@ function addNewPostCounter (counter) {
 	$("#tablelogon").after("<a href =\"http://www.titulky.com/index.php?UserDetail=me\" title =\"Nepřečtených komentářů pod vašimi titulky\" class =\"plus-unread-count\">"+counter+"</a>");
 	if (counter > 0)
 	{
-		$("plus-unread-count").addClass("plus-unread-count-red");
+		$(".plus-unread-count").addClass("plus-unread-count-red");
 	}
 }
 
@@ -214,7 +219,6 @@ function highlightNewPosts (counter) {
 
 		if (index < counter)
 		{
-			console.log("hoj");
 			$("#side1wrap ul:nth-child(4) li").eq(index).prepend("<span class =\"plus-new-post\">NOVÉ</span>");
 		}
 		else return;
@@ -279,7 +283,7 @@ $(document).ready(function() {
 			var list = [],
 				pattern = /\s\((Video)?\s?\d{4}\)/i;
 			$(movies).each(function(index,value){
-				list.push($(value).text().split(pattern)[0]);
+				list.push($(value).text().split(pattern)[0].toLowerCase());
 			});
 
 			$.get("http://www.titulky.com/index.php?Stat=5",function(data) {
@@ -301,11 +305,11 @@ $(document).ready(function() {
 					{
 						if ($(hrefNode).text().indexOf(", The") !==-1) {
 							var editedTitle = "The "+$(hrefNode).text().replace(", The", "");
-							titles.push(editedTitle.split(pattern)[0]);
+							titles.push(editedTitle.split(pattern)[0].toLowerCase());
 						}
 						else
 						{
-							titles.push($(hrefNode).text().split(pattern)[0]);
+							titles.push($(hrefNode).text().split(pattern)[0].toLowerCase());
 						}
 						links.push($(hrefNode).attr("href"));
 						startDates.push(startDate);
@@ -321,7 +325,8 @@ $(document).ready(function() {
 							itemStartDate = startDates[titleIndex];
 							itemEndDate = endDates[titleIndex];
 
-						$('.soupis tr td:nth-child(3)').slice(1).eq(index).append(" <a href =\""+itemLink+"\">překládá se</a> <i class =\"plus-right\">("+itemStartDate+" - "+itemEndDate+")</i>");
+						// $('.soupis tr td:nth-child(3)').slice(1).eq(index).append(" <a href =\""+itemLink+"\">překládá se</a> <i class =\"plus-right\">("+itemStartDate+" - "+itemEndDate+")</i>");
+						$('.soupis tr td:nth-child(3)').slice(1).eq(index).append("<i class =\"plus-right\">("+itemStartDate+" - "+itemEndDate+")</i>");
 					}
 				});
 			});
@@ -427,20 +432,19 @@ $(document).ready(function() {
 // FORUM
 	var lengthValue = 5;
 	// prida hash ke vzkazum na foru
-	$("#stat_bok_v span a").each(function(index,value)
+	/*$("#stat_bok_v span a").each(function(index,value)
 	{
 		$("#stat_bok_v span a").eq(index).attr("href",$(value).attr("href")+"#"+$(value).text().trim().slice(0,lengthValue)) ;
-	});
+	});*/
 
 	// dle shody hashe a obsahu prispevku sroluje na dany prispevek
-	if (location.href.indexOf("film=1&Prispevek") !== -1 && location.href.indexOf("#") !== -1)
+	if (location.href.indexOf("film=1&Prispevek") !== -1 && location.hash.length > 0)
 	{
-		searchForumForHash(lengthValue);
+		searchForumForHash();
 		$("#stat_bok_v span a").click(function(){
 			if ($(this).attr("href").indexOf(location.search) > 0)
 			{
-				searchForumForHash(lengthValue,$(this).attr("href").split("#")[1]);
-				return false;
+				searchForumForHash();
 			}
 		});
 	}
@@ -481,7 +485,10 @@ $(document).ready(function() {
 				highlightNewPosts(items.novychZprav);
 
 				chrome.storage.sync.set({
-					navstevaProfilu: +Date.now()
+					navstevaProfilu: +Date.now(),
+					novychZprav: 0
+				}, function(){
+					console.log(items.navstevaProfilu);
 				});
 			}
 		}

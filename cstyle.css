@@ -138,17 +138,18 @@
 	font-weight: bold;
 }
 
-.plus-unread-count-red {
-	color: #FF0000;
-}
-
 .plus-unread-count:hover {
 	text-decoration: none;
 	background: #DDDDDD;
 }
 
+.plus-unread-count-red {
+	color: #FF0000 !important;
+}
+
 .plus-new-post {
 	font-weight: bold;
 	padding-right: 5px;
+	color: #FF0000;
 }
 
