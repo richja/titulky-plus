@@ -260,16 +260,17 @@ $(document).ready(function() {
 	if (location.href.indexOf("Stat=6") !== -1)
 	{
 		$(".detailh:first").text("Poslední").attr("width",70);
-		$(".detailh").eq(1).after('<td class="detailh ucase" width="40">CSFD</td>');
+		$(".detailh").eq(1).after('<td class="detailh ucase" width="40">ČSFD</td>');
 		$(".detailh").eq(2).after('<td class="detailh ucase" width="40">Subs</td>');
 		var records = $('.soupis tr td:nth-child(2)').slice(1),
-			titles = $('.soupis tr td:nth-child(3)').slice(1);
-		records.each(function(index,value) {
+			titles = $('.soupis tr td:nth-child(4)').slice(1);
+		records.each(function(index,value)
+		{
 			var title = $(titles[index]).text().split(" ("),
 				spaceTitle = title[0].replace(new RegExp(" ", 'g'), "+"),
 				imdb = $(records[index]).text().trim();
 			$(value).after("<td><a title =\"Vyhledat titulky na subtitleseeker.com\" target =\"_blank\" href =\"http://www.subtitleseeker.com/"+imdb+"/"+spaceTitle+"/Subtitles/\">Subs</a></td>");
-			$(value).after("<td><a class =\"plus-csfd\" title =\"Vyhledat film na ČSFD\" target =\"_blank\" href =\"http://www.csfd.cz/hledat/?q="+title[0]+"\">CSFD</a></td>");
+			$(value).after("<td><a class =\"plus-csfd\" title =\"Vyhledat film na ČSFD\" target =\"_blank\" href =\"http://www.csfd.cz/hledat/?q="+title[0]+"\">ČSFD</a></td>");
 		});
 
 		var imdbs = [];
@@ -282,34 +283,58 @@ $(document).ready(function() {
 
 	// pozadavky - dopln hodnoceni k filmum
 		// console.log(imdbs);
-		$.getJSON("http://79.143.181.180/titulky/",{multi: true, imdb: imdbs.join()},function(response)
+		
+		// hide column with Ratings
+		$(".soupis tr td:nth-child(5)").hide();
+
+		var pusher = new Pusher("e3a617372cf7087256f0");
+		$(document).ajaxStart(function()
 		{
-			var ratingBg = "plus-rating-blue";
-			if (response.data.csfd_r >= 70) ratingBg = "plus-rating-red"
-			else if (response.data.csfd_r <= 30) ratingBg = "plus-rating-black"
+			var channel = pusher.subscribe('titulky-api');
+			channel.bind('my-event', function(response)
+			{
+				var ratingBg = "plus-rating-blue";
+				if (response.data.csfd_r == 0)
+				{
+					ratingBg = "";
+					response.data.csfd_r = "x";
+				}
+				else if (response.data.csfd_r >= 70) ratingBg = "plus-rating-red";
+				else if (response.data.csfd_r <= 30) ratingBg = "plus-rating-black";
 
-			console.log(response.index,response.data);
+				console.log(response.index,response.data);
 
-			$(".plus-csfd")
-				.eq(response.index)
-				.attr("href",response.data.csfd_url)
-				.text(response.data.csfd_r)
-				.parent()
-				.addClass(ratingBg+" plus-cell-rating");
+				$(".plus-csfd")
+					.eq(response.index)
+					.attr("href",response.data.csfd_url)
+					.text(response.data.csfd_r)
+					.parent()
+					.addClass(ratingBg+" plus-cell-rating");
 
-			ratingBg = "plus-rating-blue";
-			if (response.data.imdb_r >= 7.0) ratingBg = "plus-rating-red"
-			else if (response.data.imdb_r <= 3.0) ratingBg = "plus-rating-black"
+				var origRating = $(".plus-csfd").parent().next().next().eq(response.index).text().split("/")[0].replace(",",".");
+				trueRating = (origRating.length > 1) ? origRating : response.data.imdb_r;
 
-			$(".plus-csfd")
-				.eq(response.index)
-				.parent()
-				.prev()
-				.children()
-				.text(response.data.imdb_r)
-				.addClass("plus-imdb")
-				.parent()
-				.addClass(ratingBg+" plus-cell-rating");
+				ratingBg = "plus-rating-blue";
+				if (trueRating == 0) {ratingBg = ""; trueRating = "x";}
+				else if (trueRating >= 7.0) ratingBg = "plus-rating-red";
+				else if (trueRating <= 3.0) ratingBg = "plus-rating-black";
+
+				$(".plus-csfd")
+					.eq(response.index)
+					.parent()
+					.prev()
+					.children()
+					.text(trueRating)
+					.addClass("plus-imdb")
+					.parent()
+					.addClass(ratingBg+" plus-cell-rating");
+			});
+		});
+
+		$.getJSON("http://79.143.181.180/titulky/",{multi: true, imdb: imdbs.join()},function(data){
+			// console.log(data);
+			pusher.disconnect();
+
 		});
 	}
 

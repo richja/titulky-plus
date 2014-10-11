@@ -15,8 +15,8 @@
 	],
 	"content_scripts": [
 	{
+		"js": ["pusher.min.js","jquery.min.js","content.js"],
 		"matches": ["http://www.titulky.com/*","http://premium.titulky.com/*"],
-		"js": ["jquery.min.js","content.js"],
 		"css": ["cstyle.css"]
 	}
 	],
@@ -26,6 +26,7 @@
 	},
 	"options_page": "options.html",
 	"permissions": [
+		"http://79.143.181.180/titulky/*",
 		"tabs",
 		"declarativeContent",
 		"storage"

@@ -42,6 +42,9 @@
 }
 
 .plus-csfd, .plus-imdb {
+	display: inline-block;
+	width: 100%;
+	padding: 4px 0;
 }
 
 .plus-rating-blue {
@@ -57,9 +60,10 @@
 }
 
 .plus-cell-rating {
-	padding-left: 0 !important;
+	padding: 0 !important;
 	text-align: center !important;
 	font-weight: bold !important;
+	display: 
 }
 
 .plus-cell-rating a {
