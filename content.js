@@ -288,10 +288,12 @@ $(document).ready(function() {
 		$(".soupis tr td:nth-child(5)").hide();
 
 		var pusher = new Pusher("e3a617372cf7087256f0");
+		var stamp = pusher.sessionID;
+		
 		$(document).ajaxStart(function()
 		{
 			var channel = pusher.subscribe('titulky-api');
-			channel.bind('my-event', function(response)
+			channel.bind(stamp, function(response)
 			{
 				var ratingBg = "plus-rating-blue";
 				if (response.data.csfd_r == 0)
@@ -331,7 +333,7 @@ $(document).ready(function() {
 			});
 		});
 
-		$.getJSON("http://79.143.181.180/titulky/",{multi: true, imdb: imdbs.join()},function(data){
+		$.getJSON("http://79.143.181.180/titulky/",{multi: true, imdb: imdbs.join(),stamp:stamp},function(data){
 			// console.log(data);
 			pusher.disconnect();
 
