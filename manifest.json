@@ -2,7 +2,7 @@
 	"name": "Titulky plus",
 	"short_name": "Titulky+",
 	"author": "Jan Richter",
-	"version": "0.7.2",
+	"version": "0.8.1",
 	"description": "Vylepšení webu titulky.com pro pohodlnější práci (nejen pro překladatele).",
 	"manifest_version": 2,
 	"icons": {
@@ -15,9 +15,9 @@
 	],
 	"content_scripts": [
 	{
-		"js": ["pusher.min.js","jquery.min.js","content.js"],
+		"js": ["jquery.min.js","chosen.jquery.min.js","pusher.min.js","content.js"],
 		"matches": ["http://www.titulky.com/*","http://premium.titulky.com/*"],
-		"css": ["cstyle.css"]
+		"css": ["chosen.min.css","cstyle.css"]
 	}
 	],
 	"page_action": {

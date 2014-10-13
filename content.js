@@ -259,17 +259,17 @@ $(document).ready(function() {
 	// sekce pozadavky --------------------------------------------------
 	if (location.href.indexOf("Stat=6") !== -1)
 	{
-		$(".detailh:first").text("Poslední").attr("width",70);
-		$(".detailh").eq(1).after('<td class="detailh ucase" width="40">ČSFD</td>');
-		$(".detailh").eq(2).after('<td class="detailh ucase" width="40">Subs</td>');
-		var records = $('.soupis tr td:nth-child(2)').slice(1),
-			titles = $('.soupis tr td:nth-child(4)').slice(1);
+		// $(".detailh:first").text("Poslední").attr("width",70);
+		$(".detailh").eq(0).after('<td class="detailh ucase" width="40">ČSFD</td>');
+		$(".detailh").eq(6).after('<td class="detailh ucase" width="40">Subs</td>');
+		var records = $('.soupis tr td:nth-child(1)').slice(1),
+			titles = $('.soupis tr td:nth-child(2)').slice(1);
 		records.each(function(index,value)
 		{
 			var title = $(titles[index]).text().split(" ("),
 				spaceTitle = title[0].replace(new RegExp(" ", 'g'), "+"),
 				imdb = $(records[index]).text().trim();
-			$(value).after("<td><a title =\"Vyhledat titulky na subtitleseeker.com\" target =\"_blank\" href =\"http://www.subtitleseeker.com/"+imdb+"/"+spaceTitle+"/Subtitles/\">Subs</a></td>");
+			$(value).nextAll("td:last").after("<td><a title =\"Vyhledat titulky na subtitleseeker.com\" target =\"_blank\" href =\"http://www.subtitleseeker.com/"+imdb+"/"+spaceTitle+"/Subtitles/\">Subs</a></td>");
 			$(value).after("<td><a class =\"plus-csfd\" title =\"Vyhledat film na ČSFD\" target =\"_blank\" href =\"http://www.csfd.cz/hledat/?q="+title[0]+"\">ČSFD</a></td>");
 		});
 
@@ -286,10 +286,14 @@ $(document).ready(function() {
 		
 		// hide column with Ratings
 		$(".soupis tr td:nth-child(5)").hide();
+		$(".soupis .detailh a").eq(0).attr("href","/?orderby=3&Stat=6").attr("title","Seřadit filmy podle hodnocení na IMDB");
 
 		var pusher = new Pusher("e3a617372cf7087256f0");
 		var stamp = pusher.sessionID;
-		
+		var today = Date.now();
+		var genres = [];
+		var rawGenres = "";
+
 		$(document).ajaxStart(function()
 		{
 			var channel = pusher.subscribe('titulky-api');
@@ -304,7 +308,42 @@ $(document).ready(function() {
 				else if (response.data.csfd_r >= 70) ratingBg = "plus-rating-red";
 				else if (response.data.csfd_r <= 30) ratingBg = "plus-rating-black";
 
-				console.log(response.index,response.data);
+				// console.log(response.index,response.data);
+				// console.log(response.data.released,Date.now());
+				if (response.data.released*1000 > today)
+				{
+					var dateClean = new Date(response.data.released*1000),
+						dateYear = dateClean.getFullYear(),
+						dateMonth = dateClean.getMonth()+1,
+						dateDay = dateClean.getDate();
+
+					// dopln premieru pokud film jeste nevysel
+					$(".soupis tr td:nth-child(3)").slice(1).eq(response.index).append("<span title =\"Premiéra filmu. Film ještě nevyšel\" class =\"plus-opening\"> ("+ dateDay+"."+dateMonth+"."+dateYear+")</span>");
+
+				}
+
+				// kde chybi, dopln rok
+				var origYear = $(".soupis tr td:nth-child(4)").slice(1).eq(response.index).text();
+				if (response.data.year && !origYear)
+				{
+					$(".soupis tr td:nth-child(4)").slice(1).eq(response.index).text(response.data.year);
+				}
+
+				// filtrovani dle zanru
+				if (response.data.genre != "false")
+				{
+					var localGenres = response.data.genre.split(", ");
+					for (var i = 0, genresLength = localGenres.length; i < genresLength; i++) {
+
+						$(".soupis tr").slice(1).eq(response.index).addClass("plus-"+localGenres[i]);
+
+						if (genres.indexOf(localGenres[i]) === -1)
+						{
+							genres.push(localGenres[i]);
+							rawGenres += "<option>"+localGenres[i]+"</option>";
+						}
+					}
+				}
 
 				$(".plus-csfd")
 					.eq(response.index)
@@ -313,7 +352,8 @@ $(document).ready(function() {
 					.parent()
 					.addClass(ratingBg+" plus-cell-rating");
 
-				var origRating = $(".plus-csfd").parent().next().next().eq(response.index).text().split("/")[0].replace(",",".");
+				var origRating = $(".soupis tr td:nth-child(5)").slice(1).eq(response.index).text().split("/")[0].replace(",",".");
+				// var origRating = $(".plus-csfd").parent().next().next().eq(response.index).text().split("/")[0].replace(",",".");
 				trueRating = (origRating.length > 1) ? origRating : response.data.imdb_r;
 
 				ratingBg = "plus-rating-blue";
@@ -333,9 +373,32 @@ $(document).ready(function() {
 			});
 		});
 
-		$.getJSON("http://79.143.181.180/titulky/",{multi: true, imdb: imdbs.join(),stamp:stamp},function(data){
+		$.getJSON("http://79.143.181.180/titulky/",{multi: true, imdb: imdbs.join(),stamp:stamp},function(data)
+		{
 			// console.log(data);
 			pusher.disconnect();
+
+			$("h2").before("Filtrování dle žánru <select data-placeholder=\"Vyber žánr(y)...\" style=\"width:400px;\" multiple class =\"plus-filter\">"+rawGenres+"</select><br>");
+			$(".plus-filter").chosen({no_results_text: "Hledaný žánr nenalezen."}).change(function()
+			{
+				
+				var selected = $(".plus-filter").chosen().val(),
+					classes = [];
+
+				if (!selected)
+				{
+					$(".soupis tr").slice(1).show();
+					return;
+				}
+
+				$(selected).each(function(index,value)
+				{
+					classes.push(".plus-"+value);
+				});
+				$(".soupis tr").slice(1).show().not(classes.join()).hide();
+				/*var closeImage = "chrome-extension://"+chrome.runtime.id+"/chosen-sprite.png";
+				$(".search-choice-close").css("background","url("+closeImage+") !important");*/
+			});
 
 		});
 	}
@@ -363,7 +426,8 @@ $(document).ready(function() {
 				rawHTML.innerHTML = data;
 
 				// $(rawHTML).find(".soupis b > a").each(function(index, value) {
-				$(rawHTML).find(".row1,.row2").each(function(index, value) {
+				$(rawHTML).find(".row1,.row2").each(function(index, value)
+				{
 					// console.log($(value));
 					var hrefNode = $($(value).find("b > a")),
 						startDate = $($($(value).find("td"))[2]).text(),
@@ -384,7 +448,8 @@ $(document).ready(function() {
 					}
 				});
 
-				$(list).each(function (index,value) {
+				$(list).each(function (index,value)
+				{
 					if (titles.indexOf(value) !== -1)
 					{
 						var titleIndex = titles.indexOf(value),
@@ -555,7 +620,7 @@ $(document).ready(function() {
 					navstevaProfilu: +Date.now(),
 					novychZprav: 0
 				}, function(){
-					console.log(items.navstevaProfilu);
+					// console.log(items.navstevaProfilu);
 				});
 			}
 		}

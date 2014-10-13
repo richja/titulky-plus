@@ -170,3 +170,14 @@
 	padding-right: 5px;
 	color: #FF0000;
 }
+
+.plus-opening {
+	float: right;
+	font-style: italic;
+	color: #FF0000;
+}
+
+.search-choice-close {
+	/*background: url(chrome-extension://mmokpgfcoggceagfifgeaihaebemhapj/chosen-sprite.png) -42px 1px no-repeat !important;*/
+	background: url(chrome-extension://abgigldmglfimgechooinbdblfmipabb/chosen-sprite.png) -42px 1px no-repeat !important;
+}
