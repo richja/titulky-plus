@@ -168,8 +168,8 @@ function isActiveTranslator () {
 	return ($("#tablelogon img").eq(1).attr("src") && $("#tablelogon img").eq(1).attr("src") !== "./img/stars/0.gif") ? true : false;
 }
 
-function addNewPostCounter (counter) {
-	$("#tablelogon").after("<a href =\"http://www.titulky.com/index.php?UserDetail=me\" title =\"Nepřečtených komentářů pod vašimi titulky\" class =\"plus-unread-count\">"+counter+"</a>");
+function addNewPostCounter (counter,answers) {
+	$("#tablelogon").after("<a href =\"http://www.titulky.com/index.php?UserDetail=me\" title =\"Nepřečtených komentářů pod vašimi titulky / Reakce na vaše komenáře\" class =\"plus-unread-count\">"+counter+" / "+answers+"</a>");
 	if (counter > 0)
 	{
 		$(".plus-unread-count").addClass("plus-unread-count-red");
@@ -183,7 +183,8 @@ function updateCommentFeed (lastVisit) {
 		var rawHTML = document.createElement('div');
 		rawHTML.innerHTML = data;
 
-		var counter = 0;
+		var counter = 0,
+			counterAns = 0;
 		$(rawHTML).find("#side1wrap ul:nth-child(4) li").each(function(index, value) {
 			var pattern = /([^\[][^\]]*)/,
 				matches = pattern.exec($(value).text()),
@@ -197,33 +198,61 @@ function updateCommentFeed (lastVisit) {
 				minutes = time[1],
 				timestamp = new Date(year, month, day, hours, minutes).getTime();
 
-			// if (1405364580000 < timestamp)
+			// if (1415008800000 < timestamp)
 			if (lastVisit < timestamp)
 			{
 				counter++;
 			}
-			else return false;
+			else return;
 		});
+
+
+		$(rawHTML).find("#side1wrap ul").last().children().each(function(index, value) {
+			var pattern = /([^\[][^\]]*)/,
+				matches = pattern.exec($(value).text()),
+				dateSplit = matches[0].split("."),
+				day = dateSplit[0],
+				month = dateSplit[1]-1,
+				lastSeq = dateSplit[2].split(" "),
+				year = lastSeq[0],
+				time = lastSeq[1].split(":"),
+				hours = time[0],
+				minutes = time[1],
+				timestamp = new Date(year, month, day, hours, minutes).getTime();
+
+			// if (1415008800000 < timestamp)
+			if (lastVisit < timestamp)
+			{
+				counterAns++;
+			}
+			else return;
+		});
+
 		// console.log(new Date(lastVisit),counter);
 		chrome.storage.sync.set({
 			navstevaProfilu: +Date.now(),
-			novychZprav: counter
+			novychZprav: counter,
+			novychOdpovedi: counterAns
 		},function(){
-			addNewPostCounter(counter);
+			addNewPostCounter(counter,counterAns);
 		});
 	});
 }
 
-function highlightNewPosts (counter) {
+function highlightNewPosts (counter,counterAns) {
 	$("#side1wrap ul:nth-child(4) li").each(function(index,value) {
-
 		if (index < counter)
 		{
 			$("#side1wrap ul:nth-child(4) li").eq(index).prepend("<span class =\"plus-new-post\">NOVÉ</span>");
 		}
-		else return;
 	});
-	
+
+	$("#side1wrap ul").last().children().each(function(index,value) {
+		if (index < counterAns)
+		{
+			$("#side1wrap ul").last().children().eq(index).prepend("<span class =\"plus-new-post\">NOVÉ</span>");
+		}
+	});
 }
 
 /*function getItems () {
@@ -243,7 +272,7 @@ $(document).ready(function() {
 	if (location.href === "http://www.titulky.com/") $("#searchTitulky").focus();
 
 	// kdokoliv je prihlasen, odkaz na vytvoreni noveho prekladu
-	$("#tablelogon a[href$='Logoff=true']").closest("table").after("<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový překlad</a>");
+	$("#tablelogon a[href$='Logoff=true']").closest("table").after("<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový</a>");
 
 	// pouze prihlaseni
 	if ($("a[href$='Logoff=true']").length)
@@ -378,7 +407,7 @@ $(document).ready(function() {
 			// console.log(data);
 			pusher.disconnect();
 
-			$("h2").before("Filtrování dle žánru <select data-placeholder=\"Vyber žánr(y)...\" style=\"width:400px;\" multiple class =\"plus-filter\">"+rawGenres+"</select><br>");
+			$("h2").before("Filtrování dle žánru <select data-placeholder=\"Vyber žánr(y)...\" style=\"width:562px;\" multiple class =\"plus-filter\">"+rawGenres+"</select><br>");
 			$(".plus-filter").chosen({no_results_text: "Hledaný žánr nenalezen."}).change(function()
 			{
 				
@@ -426,9 +455,10 @@ $(document).ready(function() {
 				rawHTML.innerHTML = data;
 
 				// $(rawHTML).find(".soupis b > a").each(function(index, value) {
-				$(rawHTML).find(".row1,.row2").each(function(index, value)
+				// console.log($(rawHTML).find(".soupis a > img").attr("alt"));
+				// $(rawHTML).find(".soupis a > img").each(function(index, value)
+				$(rawHTML).find(".soupis").eq(1).find(".row1,.row2").each(function(index, value)
 				{
-					// console.log($(value));
 					var hrefNode = $($(value).find("b > a")),
 						startDate = $($($(value).find("td"))[2]).text(),
 						endDate = $($($(value).find("td"))[3]).text();
@@ -450,9 +480,9 @@ $(document).ready(function() {
 
 				$(list).each(function (index,value)
 				{
-					if (titles.indexOf(value) !== -1)
+					if (titles.indexOf(value.trim().split("      překládá se")[0]) !== -1)
 					{
-						var titleIndex = titles.indexOf(value),
+						var titleIndex = titles.indexOf(value.trim().split("      překládá se")[0]),
 							itemLink = links[titleIndex],
 							itemStartDate = startDates[titleIndex];
 							itemEndDate = endDates[titleIndex];
@@ -591,7 +621,8 @@ $(document).ready(function() {
 		release: true,
 		navstevaProfilu: false,
 		// cacheIntervalProfil: 1*60*60*1000,
-		novychZprav: 0
+		novychZprav: 0,
+		novychOdpovedi: 0
 	}, function(items) {
 		// console.log(items);
 
@@ -604,7 +635,7 @@ $(document).ready(function() {
 			{
 				updateCommentFeed(items.navstevaProfilu);
 			}
-			else addNewPostCounter(items.novychZprav);
+			else addNewPostCounter(items.novychZprav,items.novychOdpovedi);
 		}
 
 	// sekce profil uzivatele
@@ -614,11 +645,12 @@ $(document).ready(function() {
 			var userId = getUserId();
 			if (location.href.indexOf(userId) > 0 || location.href.indexOf("UserDetail=me"))
 			{
-				highlightNewPosts(items.novychZprav);
+				highlightNewPosts(items.novychZprav,items.novychOdpovedi);
 
 				chrome.storage.sync.set({
 					navstevaProfilu: +Date.now(),
-					novychZprav: 0
+					novychZprav: 0,
+					novychOdpovedi: 0
 				}, function(){
 					// console.log(items.navstevaProfilu);
 				});
