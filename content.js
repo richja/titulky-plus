@@ -36,6 +36,10 @@ function clearTitle (title) {
 	return title.split(/s\d{2}e\d{2}.*/i)[0];
 }
 
+function clearTitleEpisodeOnly (title) {
+	return title.split(/e\d{2}.*/i)[0];
+}
+
 function addCsfdLink(data) {
 	var url = data["csfd_url"];
 	$("textarea[name='SQLsNote']").val(function(index, old) {
@@ -43,16 +47,15 @@ function addCsfdLink(data) {
 	});
 }
 
-/*function isTvSeries (title) {
+function isTvSeries (title) {
 	var pattern = /(s\d{2}e\d{2}.*)/i,
 		matches = pattern.exec(title);
-	console.log(title, matches);
 	if (matches && matches.length > 1)
 	{
 		return matches[0];
 	}
 	else return false;
-}*/
+}
 
 function autocompleteByTitle (title) {
 	$(".plus-poster,.plus-poster + img").remove();
@@ -170,7 +173,7 @@ function isActiveTranslator () {
 
 function addNewPostCounter (counter,answers) {
 	$("#tablelogon").after("<a href =\"http://www.titulky.com/index.php?UserDetail=me\" title =\"Nepřečtených komentářů pod vašimi titulky / Reakce na vaše komenáře\" class =\"plus-unread-count\">"+counter+" / "+answers+"</a>");
-	if (counter > 0)
+	if (counter > 0 || answers > 0)
 	{
 		$(".plus-unread-count").addClass("plus-unread-count-red");
 	}
@@ -510,6 +513,12 @@ $(document).ready(function() {
 	// odkaz pro prime vyhledani dalsich verzi, pouze prihlase premium, zadny fulltext
 			$("a[href^='index.php?Fulltext']").after("<a title =\"Další verze titulků konkrétního filmu (pouze pro premium uživatele)\" class =\"plus-version\" href=\"http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ANazev="+title+"&ARelease=&ARok="+year+"\">Další přesné verze</a>");
 		}
+
+	// odkaz na vyhledani titulku celeho serialu
+		if (isTvSeries(title))
+		{
+			$(".plus-version").after("<a title =\"Vyhledat všechny titulky k této řadě seriálu\" class =\"plus-version\" href=\"http://www.titulky.com/index.php?Fulltext="+clearTitleEpisodeOnly(title)+"\">K celé řadě</a>");
+		} 		
 
 		// searchMovieCsfd(spaceTitle,year,"makeMagicCsfd");
 		searchMovieImdb(imdb,title);
