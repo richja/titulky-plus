@@ -405,7 +405,7 @@ $(document).ready(function() {
 			});
 		});
 
-		$.getJSON("http://79.143.181.180/titulky/",{multi: true, imdb: imdbs.join(),stamp:stamp},function(data)
+		$.getJSON("http://richja.cz/titulky/",{multi: true, imdb: imdbs.join(),stamp:stamp},function(data)
 		{
 			// console.log(data);
 			pusher.disconnect();
@@ -625,6 +625,7 @@ $(document).ready(function() {
 		domu: true,
 		premium: false,
 		hlavicka: false,
+		udalost: true,
 		rozpracovane: '',
 		poznamky: '',
 		release: true,
@@ -665,6 +666,25 @@ $(document).ready(function() {
 				});
 			}
 		}
+
+	var date = new Date(),
+		year = date.getFullYear();
+
+	if (items.udalost && year == "2014")
+	{
+		// hlavni stranka (index)
+		if ($(".iboxcover").length) //orloj (by fredikoun) :)
+		{
+			console.log("Vánoce!!!");
+			$("#slider li").eq(1).find("img").attr("src","chrome-extension://"+chrome.runtime.id+"/christmas.jpg");
+		}
+
+		if ($("#head_a1").length) //orloj (by fredikoun) :)
+		{
+			$(this).hide();
+			$("#head_a1").append("<img class =\"plus-snowman\" src =\"chrome-extension://"+chrome.runtime.id+"/snowman.png\">");
+		}
+	}
 
 	// vysledky hledani (fulltext i prime)
 		if (location.href.indexOf("Fulltext") !== -1 || location.href.indexOf("Searching") !== -1)
