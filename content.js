@@ -171,23 +171,43 @@ function isActiveTranslator () {
 	return ($("#tablelogon img").eq(1).attr("src") && $("#tablelogon img").eq(1).attr("src") !== "./img/stars/0.gif") ? true : false;
 }
 
-function addNewPostCounter (counter,answers) {
-	$("#tablelogon").after("<a href =\"http://www.titulky.com/index.php?UserDetail=me\" title =\"Nepřečtených komentářů pod vašimi titulky / Reakce na vaše komenáře\" class =\"plus-unread-count\">"+counter+" / "+answers+"</a>");
-	if (counter > 0 || answers > 0)
-	{
-		$(".plus-unread-count").addClass("plus-unread-count-red");
-	}
+function addNewPostCounter (counter,answers,mentions,preklad) {
+		$("#tablelogon").after("<a href =\"http://www.titulky.com/index.php?UserDetail=me\" title =\"Nepřečtených komentářů pod vašimi titulky / Reakce na vaše komentáře\" class =\"plus-unread-count  plus-unread-count-msgs\">"+counter+" / "+answers+"</a>");
+
+		// Odkaz na vytvoreni noveho prekladu nebo na upravu stavajiciho
+		if (preklad)
+		{
+			var workLink = "<a href =\"http://www.titulky.com/?Stat=5&item=" + preklad + "\" class =\"plus-new\" title =\"Komentářů pod rozpracovanými titulky\">Rozpracované / <span class =\"plus-unread-count-mentions\">" + mentions + "</span></a>";
+		}
+		else
+		{
+			var workLink = "<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový</a>";
+		}
+		$("#tablelogon a[href$='Logoff=true']").closest("table").after(workLink);
+
+
+		if (counter > 0 || answers > 0)
+		{
+			$(".plus-unread-count").addClass("plus-unread-count-red");
+		}
+
+		if (mentions > 0)
+		{
+			$(".plus-unread-count-mentions").addClass("plus-unread-count-red");
+		}
 }
 
 function updateCommentFeed (lastVisit) {
 
+	// komentare a reakce
 	$.get("http://www.titulky.com/index.php?UserDetail=me",function(data) {
 
 		var rawHTML = document.createElement('div');
 		rawHTML.innerHTML = data;
 
 		var counter = 0,
-			counterAns = 0;
+			counterAns = 0,
+			counterMentions = 0;
 		$(rawHTML).find("#side1wrap ul:nth-child(4) li").each(function(index, value) {
 			var pattern = /([^\[][^\]]*)/,
 				matches = pattern.exec($(value).text()),
@@ -231,15 +251,80 @@ function updateCommentFeed (lastVisit) {
 			else return;
 		});
 
-		// console.log(new Date(lastVisit),counter);
-		chrome.storage.sync.set({
-			navstevaProfilu: +Date.now(),
-			novychZprav: counter,
-			novychOdpovedi: counterAns
-		},function(){
-			addNewPostCounter(counter,counterAns);
+		chrome.storage.sync.get({
+		preklad: 0
+		}, function(items) {
+			if (items.preklad)
+			{
+
+				// komentare v rozpracovanych
+				$.get("http://www.titulky.com/?Stat=5&item="+items.preklad,function(data) {
+					var rawHTML = document.createElement('div');
+					rawHTML.innerHTML = data;
+
+					$(rawHTML).find(".soupis .detail").first().find("tr").each(function(index, value) {
+						if(index%2)
+						{
+							var dateRaw = $(value).children().first().text().trim().split(" ");
+							if (dateRaw.length == 3)
+							{
+
+								var dateSplit = dateRaw[0].split("."),
+									day = dateSplit[0],
+									month = dateSplit[1]-1,
+									year = dateSplit[2],
+									time = dateRaw[1].split(":"),
+									hours = time[0],
+									minutes = time[1];
+
+								timestamp = new Date(year, month, day, hours, minutes).getTime();
+								// console.log(lastVisit,timestamp, year, month, day, hours, minutes);
+								// if (1415008800000 < timestamp)
+								if (lastVisit < timestamp)
+								{
+									counterMentions++;
+								}
+								else return;
+							}
+
+						}
+					});
+
+					chrome.storage.sync.set({
+						navstevaProfilu: +Date.now(),
+						novychZprav: counter,
+						novychOdpovedi: counterAns,
+						novychZminek: counterMentions,
+					},function(){
+						addNewPostCounter(counter,counterAns,counterMentions,items.preklad);
+					});
+
+				});
+			}
+			else
+			{
+				chrome.storage.sync.set({
+					navstevaProfilu: +Date.now(),
+					novychZprav: counter,
+					novychOdpovedi: counterAns,
+					novychZminek: 0
+				},function(){
+					addNewPostCounter(counter,counterAns,counterMentions,items.preklad);
+				});				
+			}
+
 		});
+
+
+		
 	});
+
+	
+
+}
+
+function tempCrawler() {
+	
 }
 
 function highlightNewPosts (counter,counterAns) {
@@ -258,24 +343,13 @@ function highlightNewPosts (counter,counterAns) {
 	});
 }
 
-/*function getItems () {
-	chrome.storage.sync.get({
-		vyhledavani: false,
-		domu: true,
-		rozpracovane: '',
-		poznamky: ''
-	}, function(items) {
-		console.log(items);
-		return items;
-	});
-}*/
+
 
 $(document).ready(function() {
+	tempCrawler();
+
 	// aktivni input pro vyhledavani hned po nacteni
 	if (location.href === "http://www.titulky.com/") $("#searchTitulky").focus();
-
-	// kdokoliv je prihlasen, odkaz na vytvoreni noveho prekladu
-	$("#tablelogon a[href$='Logoff=true']").closest("table").after("<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový</a>");
 
 	// pouze prihlaseni
 	if ($("a[href$='Logoff=true']").length)
@@ -589,6 +663,27 @@ $(document).ready(function() {
 				}
 			});
 		}
+		// uprava rozpracovaneho prekladu
+		else
+		{
+			// uloz ID prekladu
+			var prekladID = location.href.split("Preklad=")[1];
+			chrome.storage.sync.set({
+				preklad: prekladID,
+				novychZminek: 0
+			}, function(items){
+			});
+
+			// pri dokoncen/zruseni prekladu smaz ID
+			$("form .tlacitko").first().click(function() {
+				chrome.storage.sync.set({
+				preklad: 0,
+				novychZminek: 0
+				}, function(items){
+					// console.log(items);
+				});
+			});
+		}
 	}
 
 // sekce nahrani novych titulku - prvni krok
@@ -601,6 +696,7 @@ $(document).ready(function() {
 	}
 
 // FORUM
+	/* Jiz implementovano nativne */
 	var lengthValue = 5;
 	// prida hash ke vzkazum na foru
 	/*$("#stat_bok_v span a").each(function(index,value)
@@ -609,7 +705,7 @@ $(document).ready(function() {
 	});*/
 
 	// dle shody hashe a obsahu prispevku sroluje na dany prispevek
-	if (location.href.indexOf("film=1&Prispevek") !== -1 && location.hash.length > 0)
+	/*if (location.href.indexOf("film=1&Prispevek") !== -1 && location.hash.length > 0)
 	{
 		searchForumForHash();
 		$("#stat_bok_v span a").click(function(){
@@ -618,7 +714,7 @@ $(document).ready(function() {
 				searchForumForHash();
 			}
 		});
-	}
+	}*/
 
 	chrome.storage.sync.get({
 		vyhledavani: false,
@@ -633,21 +729,28 @@ $(document).ready(function() {
 		navstevaProfilu: false,
 		// cacheIntervalProfil: 1*60*60*1000,
 		novychZprav: 0,
-		novychOdpovedi: 0
+		novychOdpovedi: 0,
+		novychZminek: 0,
+		preklad: 0
 	}, function(items) {
 		// console.log(items);
 
 		if (isActiveTranslator())
 		{
-			var time = 1*15*60*1000; // 15 minut
+			var time = 1*15*60*1000; // 15 minut => cache
 			// console.log(time,new Date (items.navstevaProfilu),new Date (items.navstevaProfilu+time),new Date());
 			// if (items.navstevaProfilu === false || items.navstevaProfilu <= +Date.now())
 			if (items.navstevaProfilu === false || items.navstevaProfilu+time < +Date.now())
 			{
 				updateCommentFeed(items.navstevaProfilu);
 			}
-			else addNewPostCounter(items.novychZprav,items.novychOdpovedi);
+			else addNewPostCounter(items.novychZprav,items.novychOdpovedi,items.novychZminek,items.preklad);
 		}
+		else
+		{
+			$("#tablelogon a[href$='Logoff=true']").closest("table").after("<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový</a>");
+		}
+
 
 	// sekce profil uzivatele
 		if (location.href.indexOf("UserDetail=") !== -1)
@@ -666,6 +769,15 @@ $(document).ready(function() {
 					// console.log(items.navstevaProfilu);
 				});
 			}
+		}
+
+		if (items.preklad && items.novychZminek && location.href.indexOf("Stat=5&item="+items.preklad) !== -1)
+		{
+			chrome.storage.sync.set({
+					novychZminek: 0
+				}, function(){
+					// console.log(items.navstevaProfilu);
+				});
 		}
 
 	var date = new Date(),
@@ -755,7 +867,7 @@ $(document).ready(function() {
 			);
 
 			for (var i = linkEl.length -1 ; i >= 0; i--) {
-				console.log($(linkEl[i]).length);
+				// console.log($(linkEl[i]).length);
 				if ($(linkEl[i]).length)
 				{
 					var linked = autolinker.link($(linkEl[i]).html());

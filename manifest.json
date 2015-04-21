@@ -2,7 +2,7 @@
 	"name": "Titulky plus",
 	"short_name": "Titulky+",
 	"author": "Jan Richter",
-	"version": "0.8.5",
+	"version": "0.9",
 	"description": "Vylepšení webu titulky.com pro pohodlnější práci (nejen pro překladatele).",
 	"manifest_version": 2,
 	"icons": {

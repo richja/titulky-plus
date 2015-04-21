@@ -9,7 +9,7 @@
 	background: #DDDDDD;
 	font-size: 13px;
 	padding: 5px;
-	right: 96px;
+	right: 12px;
 	top: 70px;
 }
 
@@ -149,7 +149,7 @@
 	border-radius: 4px;
 	background: #DDDDDD;
 	font-size: 13px;
-	padding: 5px;
+	padding: 4px;
 	right: 12px;
 	top: 70px;
 	font-weight: bold;
@@ -159,6 +159,16 @@
 	text-decoration: none;
 	background: #DDDDDD;
 }
+
+.plus-unread-count-msgs {
+	right: 144px;
+	top: 39px;
+}
+
+.plus-unread-count-mentions {
+	font-weight: bold;
+}
+
 
 .plus-unread-count-red {
 	color: #FF0000 !important;
