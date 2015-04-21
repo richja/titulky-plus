@@ -18,7 +18,7 @@ function searchMovieCsfd (title,year,caller) {
 
 function searchMovieImdb (imdb,title) {
 	$.get("http://www.omdbapi.com/?i="+imdb,function(data) {
-		data = JSON.parse(data);
+		// data = JSON.parse(data);
 		if (data.imdbRating) {
 			searchMovieCsfd(title,data.Year.slice(0,4),"makeMagicCsfd");
 			// searchMovieCsfd(spaceTitle(data.Title),data.Year.slice(0,4),"makeMagicCsfd");
@@ -289,7 +289,7 @@ $(document).ready(function() {
 	}
 
 	// sekce pozadavky --------------------------------------------------
-	if (location.href.indexOf("Stat=6") !== -1)
+	if (location.href.indexOf("Stat=6") !== -1 || location.href.indexOf("pozadavek-na-titulky-patri-sem") !== -1)
 	{
 		// $(".detailh:first").text("Poslední").attr("width",70);
 		$(".detailh").eq(0).after('<td class="detailh ucase" width="40">ČSFD</td>');
@@ -625,6 +625,7 @@ $(document).ready(function() {
 		domu: true,
 		premium: false,
 		hlavicka: false,
+		odkazy: true,
 		udalost: true,
 		rozpracovane: '',
 		poznamky: '',
@@ -675,7 +676,7 @@ $(document).ready(function() {
 		// hlavni stranka (index)
 		if ($(".iboxcover").length) //orloj (by fredikoun) :)
 		{
-			console.log("Vánoce!!!");
+			// console.log("Vánoce!!!");
 			$("#slider li").eq(1).find("img").attr("src","chrome-extension://"+chrome.runtime.id+"/christmas.jpg");
 		}
 
@@ -730,6 +731,39 @@ $(document).ready(function() {
 			$("#head_a,#head_b").wrapAll("<div id ='head'>");
 		}
 
+	// udelat odkazy klikaci
+		if (items.odkazy)
+		{
+			linkEl = [
+				// rozpracovane detail popis
+				$(".soupis .Radek_1 td").first().children(),
+				// poznamka u titulku
+				$(".orezdetail").first(),
+				// info o uzivateli
+				$("#tabuser tbody tr:nth-child(2) td:nth-child(2)"),
+				// komentare k titulkum
+				$(".detail tbody").eq(4),
+				// prispevky v diskuzi
+				$(".detail tbody").eq(1)
+			];
+
+			var autolinker = new Autolinker(
+				{
+					newWindow: false,
+					truncate: 80
+				}
+			);
+
+			for (var i = linkEl.length -1 ; i >= 0; i--) {
+				console.log($(linkEl[i]).length);
+				if ($(linkEl[i]).length)
+				{
+					var linked = autolinker.link($(linkEl[i]).html());
+					$(linkEl[i]).html(linked);
+				}				
+			};
+		}
+
 		if (items.vyhledavani)
 		{
 	// vyhledavej vzdy naprimo, bez fulltextu
@@ -748,7 +782,7 @@ $(document).ready(function() {
 
 		if (items.premium)
 		{
-			$("#menu a[href$='Napoveda=2']").parent().before("<li><a href =\"http://premium.titulky.com\">Premium</a></li>");
+			$("#menu a[href$='precti-si-zakladni-napovedu-2']").parent().before("<li><a href =\"http://premium.titulky.com\">Premium</a></li>");
 		}
 
 		// skryt "neuzitecne odkazy"

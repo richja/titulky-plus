@@ -1,8 +1,8 @@
 Zbývá udělat:
-- vypsat existenci (ano/ne) anglickych titulek k filmu z subtitleseeker api?
-- pouzit CSFDapi v2 pro overeni nalezeni spravneho filmu dle IMDB
 
 Hotovo:
+- vypsat existenci (ano/ne) anglickych titulek k filmu z subtitleseeker api?
+- pouzit CSFDapi v2 pro overeni nalezeni spravneho filmu dle IMDB
 - ve vlastních požadavcích zobrazit, zda je už film překládán či nikoliv
 - v pozadavcich ciselne hodnoceni z CSFD a IMDB misto textu, klikaci odkazy na dane weby
 - vytvořit vlastní API wrapper

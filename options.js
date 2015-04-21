@@ -4,6 +4,7 @@ function save_options() {
 	var domu = document.getElementById('domu').checked;
 	var premium = document.getElementById('premium').checked;
 	var hlavicka = document.getElementById('hlavicka').checked;
+	var odkazy = document.getElementById('odkazy').checked;
 	var udalost = document.getElementById('udalost').checked;
 	var rozpracovane = document.getElementById('rozpracovane').value;
 	var poznamky = document.getElementById('poznamky').value;
@@ -13,6 +14,7 @@ function save_options() {
 		domu: domu,
 		premium: premium,
 		hlavicka: hlavicka,
+		odkazy: odkazy,
 		udalost: udalost,
 		rozpracovane: rozpracovane,
 		poznamky: poznamky
@@ -35,6 +37,7 @@ function restore_options() {
 		domu: true,
 		premium: false,
 		hlavicka: false,
+		odkazy: true,
 		udalost: true,
 		rozpracovane: '',
 		poznamky: ''
@@ -43,6 +46,7 @@ function restore_options() {
 		document.getElementById("domu").checked = items.domu;
 		document.getElementById("premium").checked = items.premium;
 		document.getElementById("hlavicka").checked = items.hlavicka;
+		document.getElementById("odkazy").checked = items.odkazy;
 		document.getElementById("udalost").checked = items.udalost;
 		document.getElementById("rozpracovane").value = items.rozpracovane;
 		document.getElementById("poznamky").value = items.poznamky;
