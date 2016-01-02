@@ -208,7 +208,8 @@ function updateCommentFeed (lastVisit) {
 		var counter = 0,
 			counterAns = 0,
 			counterMentions = 0;
-		$(rawHTML).find("#side1wrap ul:nth-child(4) li").each(function(index, value) {
+		$("#side1wrap ul").eq(3).find("li").each(function(index, value) {
+		// $(rawHTML).find("#side1wrap ul:nth-child(4) li").each(function(index, value) {
 			var pattern = /([^\[][^\]]*)/,
 				matches = pattern.exec($(value).text()),
 				dateSplit = matches[0].split("."),
@@ -585,7 +586,7 @@ $(document).ready(function() {
 		if ($("a[href$='Logoff=true']").length)
 		{
 	// odkaz pro prime vyhledani dalsich verzi, pouze prihlase premium, zadny fulltext
-			$("a[href^='index.php?Fulltext']").after("<a title =\"Další verze titulků konkrétního filmu (pouze pro premium uživatele)\" class =\"plus-version\" href=\"http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ANazev="+title+"&ARelease=&ARok="+year+"\">Další přesné verze</a>");
+			$("a[href^='/?Fulltext']").after("<a title =\"Další verze titulků konkrétního filmu (pouze pro premium uživatele)\" class =\"plus-version\" href=\"http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ANazev="+title+"&ARelease=&ARok="+year+"\">Další přesné verze</a>");
 		}
 
 	// odkaz na vyhledani titulku celeho serialu
