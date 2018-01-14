@@ -172,16 +172,16 @@ function isActiveTranslator () {
 }
 
 function addNewPostCounter (counter,answers,mentions,preklad) {
-		$("#tablelogon").after("<a href =\"http://www.titulky.com/index.php?UserDetail=me\" title =\"Nepřečtených komentářů pod vašimi titulky / Reakce na vaše komentáře\" class =\"plus-unread-count  plus-unread-count-msgs\">"+counter+" / "+answers+"</a>");
+		$("#tablelogon").after("<a href =\"https://www.titulky.com/index.php?UserDetail=me\" title =\"Nepřečtených komentářů pod vašimi titulky / Reakce na vaše komentáře\" class =\"plus-unread-count  plus-unread-count-msgs\">"+counter+" / "+answers+"</a>");
 
 		// Odkaz na vytvoreni noveho prekladu nebo na upravu stavajiciho
 		if (preklad)
 		{
-			var workLink = "<a href =\"http://www.titulky.com/?Stat=5&item=" + preklad + "\" class =\"plus-new\" title =\"Komentářů pod rozpracovanými titulky\">Rozpracované / <span class =\"plus-unread-count-mentions\">" + mentions + "</span></a>";
+			var workLink = "<a href =\"https://www.titulky.com/?Stat=5&item=" + preklad + "\" class =\"plus-new\" title =\"Komentářů pod rozpracovanými titulky\">Rozpracované / <span class =\"plus-unread-count-mentions\">" + mentions + "</span></a>";
 		}
 		else
 		{
-			var workLink = "<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový</a>";
+			var workLink = "<a href =\"https://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový</a>";
 		}
 		$("#tablelogon a[href$='Logoff=true']").closest("table").after(workLink);
 
@@ -200,7 +200,7 @@ function addNewPostCounter (counter,answers,mentions,preklad) {
 function updateCommentFeed (lastVisit) {
 
 	// komentare a reakce
-	$.get("http://www.titulky.com/index.php?UserDetail=me",function(data) {
+	$.get("https://www.titulky.com/index.php?UserDetail=me",function(data) {
 
 		var rawHTML = document.createElement('div');
 		rawHTML.innerHTML = data;
@@ -259,7 +259,7 @@ function updateCommentFeed (lastVisit) {
 			{
 
 				// komentare v rozpracovanych
-				$.get("http://www.titulky.com/?Stat=5&item="+items.preklad,function(data) {
+				$.get("https://www.titulky.com/?Stat=5&item="+items.preklad,function(data) {
 					var rawHTML = document.createElement('div');
 					rawHTML.innerHTML = data;
 
@@ -350,14 +350,14 @@ $(document).ready(function() {
 	tempCrawler();
 
 	// aktivni input pro vyhledavani hned po nacteni
-	if (location.href === "http://www.titulky.com/") $("#searchTitulky").focus();
+	if (location.href === "https://www.titulky.com/") $("#searchTitulky").focus();
 
 	// pouze prihlaseni
 	if ($("a[href$='Logoff=true']").length)
 	{
 		$("#search_submit").after("<a title =\"Vyhledat přesnou shodu (pouze pro premium uživatele)\" href =\"\" class=\"tlacitko plus-search\">Vyhledat přesně</a>");
 		$(".plus-search").click(function(event){
-			window.location.href ="http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ARelease=&ARok=&ANazev="+$("#searchTitulky").val();
+			window.location.href ="https://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ARelease=&ARok=&ANazev="+$("#searchTitulky").val();
 			return false;
 		});
 		$("#tablesearch").css("margin-bottom","20px");
@@ -377,7 +377,7 @@ $(document).ready(function() {
 				spaceTitle = title[0].replace(new RegExp(" ", 'g'), "+"),
 				imdb = $(records[index]).text().trim();
 			$(value).nextAll("td:last").after("<td><a title =\"Vyhledat titulky na subtitleseeker.com\" target =\"_blank\" href =\"http://www.subtitleseeker.com/"+imdb+"/"+spaceTitle+"/Subtitles/\">Subs</a></td>");
-			$(value).after("<td><a class =\"plus-csfd\" title =\"Vyhledat film na ČSFD\" target =\"_blank\" href =\"http://www.csfd.cz/hledat/?q="+title[0]+"\">ČSFD</a></td>");
+			$(value).after("<td><a class =\"plus-csfd\" title =\"Vyhledat film na ČSFD\" target =\"_blank\" href =\"https://www.csfd.cz/hledat/?q="+title[0]+"\">ČSFD</a></td>");
 		});
 
 		var imdbs = [];
@@ -523,7 +523,7 @@ $(document).ready(function() {
 				list.push($(value).text().split(pattern)[0].toLowerCase());
 			});
 
-			$.get("http://www.titulky.com/index.php?Stat=5",function(data)
+			$.get("https://www.titulky.com/index.php?Stat=5",function(data)
 			{
 				var rawHTML = document.createElement('div'),
 					links = [],
@@ -592,7 +592,7 @@ $(document).ready(function() {
 	// odkaz na vyhledani titulku celeho serialu
 		if (isTvSeries(title))
 		{
-			$(".plus-version").after("<a title =\"Vyhledat všechny titulky k této řadě seriálu\" class =\"plus-version\" href=\"http://www.titulky.com/index.php?Fulltext="+clearTitleEpisodeOnly(title)+"\">K celé řadě</a>");
+			$(".plus-version").after("<a title =\"Vyhledat všechny titulky k této řadě seriálu\" class =\"plus-version\" href=\"https://www.titulky.com/index.php?Fulltext="+clearTitleEpisodeOnly(title)+"\">K celé řadě</a>");
 		} 		
 
 		// searchMovieCsfd(spaceTitle,year,"makeMagicCsfd");
@@ -749,7 +749,7 @@ $(document).ready(function() {
 		}
 		else
 		{
-			$("#tablelogon a[href$='Logoff=true']").closest("table").after("<a href =\"http://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový</a>");
+			$("#tablelogon a[href$='Logoff=true']").closest("table").after("<a href =\"https://www.titulky.com/index.php?Preklad=0\" class =\"plus-new\">Nový</a>");
 		}
 
 
@@ -840,7 +840,7 @@ $(document).ready(function() {
 		{
 			$("#head_b")
 				.css("bottom","-3px")
-				.before("<div id =\"head_a\"><div id =\"head_a1\"><a href =\"http://www.titulky.com\"><img id=\"headlogotitulky\" src=\"http://www.titulky.com/css/logo.png\" alt=\"České a slovenské titulky\"></a></div></div>");
+				.before("<div id =\"head_a\"><div id =\"head_a1\"><a href =\"https://www.titulky.com\"><img id=\"headlogotitulky\" src=\"https://www.titulky.com/css/logo.png\" alt=\"České a slovenské titulky\"></a></div></div>");
 			$("#head_a,#head_b").wrapAll("<div id ='head'>");
 		}
 
@@ -881,7 +881,7 @@ $(document).ready(function() {
 		{
 	// vyhledavej vzdy naprimo, bez fulltextu
 			$("form[name='searchformsub']").submit(function(event){
-				window.location.href = "http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ARelease=&ARok=&ANazev="+$("#searchTitulky").val();
+				window.location.href = "https://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ARelease=&ARok=&ANazev="+$("#searchTitulky").val();
 				return false;
 			});
 		}
@@ -889,20 +889,20 @@ $(document).ready(function() {
 		if (items.domu)
 		{
 	// tlacitko domu na kazde strance
-			$("#menu li:first").before("<li><a href =\"http://www.titulky.com\">Domů</a></li>");
+			$("#menu li:first").before("<li><a href =\"https://www.titulky.com\">Domů</a></li>");
 			// $("#menu li a:first").text("Domů");
 		}
 
 		if (items.premium)
 		{
-			$("#menu a[href$='precti-si-zakladni-napovedu-2']").parent().before("<li><a href =\"http://premium.titulky.com\">Premium</a></li>");
+			$("#menu a[href$='precti-si-zakladni-napovedu-2']").parent().before("<li><a href =\"https://premium.titulky.com\">Premium</a></li>");
 		}
 
 		// skryt "neuzitecne odkazy"
 		// $("#menu li").slice(-6,-3).hide()
 
 	// editace titulku na premium
-		if (location.href.indexOf("http://premium.titulky.com/index.php?Set=") !== -1)
+		if (location.href.indexOf("https://premium.titulky.com/index.php?Set=") !== -1)
 		{
 	// sablona poznamek pro nove vlozeny titulek
 			$("input[name='SQLsNazev']").after("<input type=\"button\" class=\"button plus-autocomplete\" value=\"Automaticky vyplnit\" title =\"Automaticky doplní údaje názvu filmu (pro přesnější výsledky předvyplňte rok)\">");
