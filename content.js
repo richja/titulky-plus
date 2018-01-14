@@ -9,7 +9,7 @@ function searchMovieCsfd (title,year,caller) {
 		}
 
 		if (id) {
-			$.get("http://csfdapi.cz/movie/"+id,function(data) {
+			$.get("https://csfdapi.cz/movie/"+id,function(data) {
 				window[caller](data);
 			});
 		}
@@ -17,12 +17,12 @@ function searchMovieCsfd (title,year,caller) {
 }
 
 function searchMovieImdb (imdb,title) {
-	$.get("http://www.omdbapi.com/?i="+imdb,function(data) {
+	$.get("https://www.omdbapi.com/?i="+imdb+"&apikey=2c7f8b02",function(data) {
 		// data = JSON.parse(data);
 		if (data.imdbRating) {
-			searchMovieCsfd(title,data.Year.slice(0,4),"makeMagicCsfd");
-			// searchMovieCsfd(spaceTitle(data.Title),data.Year.slice(0,4),"makeMagicCsfd");
-			makeMagicImdb(data.imdbRating);
+			//searchMovieCsfd(title,data.Year.slice(0,4),"displayCsfdRating");
+			// searchMovieCsfd(spaceTitle(data.Title),data.Year.slice(0,4),"displayCsfdRating");
+			displayImdbRating(data.imdbRating);
 		}
 	});
 }
@@ -36,6 +36,12 @@ function clearTitle (title) {
 	return title.split(/s\d{2}e\d{2}.*/i)[0];
 }
 
+/**
+ * Removes the episode number from the title (eg. E01)
+ *
+ * @param {string} title
+ * @returns {string}
+ */
 function clearTitleEpisodeOnly (title) {
 	return title.split(/e\d{2}.*/i)[0];
 }
@@ -47,9 +53,16 @@ function addCsfdLink(data) {
 	});
 }
 
+/**
+ * If the given title is TV series or just a movie
+ *
+ * @param {string} title
+ * @returns {bool}
+ */
 function isTvSeries (title) {
 	var pattern = /(s\d{2}e\d{2}.*)/i,
 		matches = pattern.exec(title);
+	console.log(matches && matches.length > 1);
 	if (matches && matches.length > 1)
 	{
 		return matches[0];
@@ -60,11 +73,11 @@ function isTvSeries (title) {
 function autocompleteByTitle (title) {
 	$(".plus-poster,.plus-poster + img").remove();
 	title = clearTitle(title);
-	var query = "http://www.omdbapi.com/?t="+title;
+	var query = "https://www.omdbapi.com/?t="+title;
 
 	if ($("input[name='SQLnRokUvedeni']").val().length > 0)
 	{
-		query = "http://www.omdbapi.com/?t="+title+"&y="+$("input[name='SQLnRokUvedeni']").val();
+		query = "https://www.omdbapi.com/?t=" + title + "&y=" + $("input[name='SQLnRokUvedeni']").val() + "&apikey=2c7f8b02";
 	}
 
 	$.get(query,function(data) {
@@ -115,7 +128,7 @@ function findAlternativeTitle (data) {
 	}
 }
 
-function makeMagicCsfd (data) {
+function displayCsfdRating (data) {
 	var rating = data["rating"],
 		url = data["csfd_url"];
 
@@ -131,7 +144,7 @@ function makeMagicCsfd (data) {
 	}
 }
 
-function makeMagicImdb (rating) {
+function displayImdbRating (rating) {
 
 	var ratingBg = "plus-rating-blue";
 	if (rating >= 7.0) ratingBg = "plus-rating-red";
@@ -156,10 +169,10 @@ function makeMagicImdb (rating) {
 	});
 }*/
 
-function searchForumForHash () {
+/*function searchForumForHash () {
 	var hash = location.hash;
 	$(hash).parent().next().children().addClass("plus-animate-post");
-}
+}*/
 
 function getUserId () {
 	var pattern = /(\d{1,10})/,
@@ -313,19 +326,8 @@ function updateCommentFeed (lastVisit) {
 					addNewPostCounter(counter,counterAns,counterMentions,items.preklad);
 				});				
 			}
-
 		});
-
-
-		
 	});
-
-	
-
-}
-
-function tempCrawler() {
-	
 }
 
 function highlightNewPosts (counter,counterAns) {
@@ -344,10 +346,7 @@ function highlightNewPosts (counter,counterAns) {
 	});
 }
 
-
-
 $(document).ready(function() {
-	tempCrawler();
 
 	// aktivni input pro vyhledavani hned po nacteni
 	if (location.href === "https://www.titulky.com/") $("#searchTitulky").focus();
@@ -370,14 +369,25 @@ $(document).ready(function() {
 		$(".detailh").eq(0).after('<td class="detailh ucase" width="40">ČSFD</td>');
 		$(".detailh").eq(6).after('<td class="detailh ucase" width="40">Subs</td>');
 		var records = $('.soupis tr td:nth-child(1)').slice(1),
-			titles = $('.soupis tr td:nth-child(2)').slice(1);
+            titles = $('.soupis tr td:nth-child(2)').slice(1),
+        	imdbRatings = $('.soupis tr td:nth-child(4)').slice(1);
+
 		records.each(function(index,value)
 		{
 			var title = $(titles[index]).text().split(" ("),
 				spaceTitle = title[0].replace(new RegExp(" ", 'g'), "+"),
-				imdb = $(records[index]).text().trim();
-			$(value).nextAll("td:last").after("<td><a title =\"Vyhledat titulky na subtitleseeker.com\" target =\"_blank\" href =\"http://www.subtitleseeker.com/"+imdb+"/"+spaceTitle+"/Subtitles/\">Subs</a></td>");
+                imdb = $(records[index]).text().trim(),
+    	        rating = $(imdbRatings[index]).text().trim();
+
+			// add new column with a link to subtitleseeker.com
+			$(value).nextAll("td:last").after("<td><a title =\"Vyhledat titulky na subtitleseeker.com\" target =\"_blank\" href =\"https://www.subtitleseeker.com/"+imdb+"/"+spaceTitle+"/Subtitles/\">Subs</a></td>");
+
+			//add new column with a link to CSFD.cz search
 			$(value).after("<td><a class =\"plus-csfd\" title =\"Vyhledat film na ČSFD\" target =\"_blank\" href =\"https://www.csfd.cz/hledat/?q="+title[0]+"\">ČSFD</a></td>");
+
+			//edit rating column with a link to IMDB
+            $(imdbRatings[index]).html("<a href =\"http://imdb.com/title/tt" + imdb + "\" target=\"_blank\" title=\"Otevřít film na IMDB\">" + rating +  "</a>");
+
 		});
 
 		var imdbs = [];
@@ -391,18 +401,20 @@ $(document).ready(function() {
 	// pozadavky - dopln hodnoceni k filmum
 		// console.log(imdbs);
 		
-		// hide column with Ratings
-		$(".soupis tr td:nth-child(5)").hide();
+		// hide Detail column
+		$(".soupis tr td:nth-child(1)").hide();
 		$(".soupis .detailh a").eq(0).attr("href","/?orderby=3&Stat=6").attr("title","Seřadit filmy podle hodnocení na IMDB");
 
-		var pusher = new Pusher("e3a617372cf7087256f0");
-		var stamp = pusher.sessionID;
+		/*var pusher = new Pusher("e3a617372cf7087256f0");
+		var stamp = pusher.sessionID;*/
 		var today = Date.now();
 		var genres = [];
 		var rawGenres = "";
 
 		$(document).ajaxStart(function()
 		{
+			return;
+
 			var channel = pusher.subscribe('titulky-api');
 			channel.bind(stamp, function(response)
 			{
@@ -480,7 +492,7 @@ $(document).ready(function() {
 			});
 		});
 
-		$.getJSON("http://richja.cz/titulky/",{multi: true, imdb: imdbs.join(),stamp:stamp},function(data)
+		/*$.getJSON("http://richja.cz/titulky/",{multi: true, imdb: imdbs.join(),stamp:stamp},function(data)
 		{
 			// console.log(data);
 			pusher.disconnect();
@@ -505,9 +517,9 @@ $(document).ready(function() {
 				$(".soupis tr").slice(1).show().not(classes.join()).hide();
 				/*var closeImage = "chrome-extension://"+chrome.runtime.id+"/chosen-sprite.png";
 				$(".search-choice-close").css("background","url("+closeImage+") !important");*/
-			});
+			/*});
 
-		});
+		});*/
 	}
 
 	// sekce vlastní pozadavky ------------------------------------------
@@ -586,7 +598,7 @@ $(document).ready(function() {
 		if ($("a[href$='Logoff=true']").length)
 		{
 	// odkaz pro prime vyhledani dalsich verzi, pouze prihlase premium, zadny fulltext
-			$("a[href^='/?Fulltext']").after("<a title =\"Další verze titulků konkrétního filmu (pouze pro premium uživatele)\" class =\"plus-version\" href=\"http://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ANazev="+title+"&ARelease=&ARok="+year+"\">Další přesné verze</a>");
+			$("a[href^='/?Fulltext']").after("<a title =\"Další verze titulků konkrétního filmu (pouze pro premium uživatele)\" class =\"plus-version\" href=\"https://www.titulky.com/index.php?Searching=AdvancedResult&AFulltext=&ANazev="+title+"&ARelease=&ARok="+year+"\">Další přesné verze</a>");
 		}
 
 	// odkaz na vyhledani titulku celeho serialu
@@ -595,7 +607,7 @@ $(document).ready(function() {
 			$(".plus-version").after("<a title =\"Vyhledat všechny titulky k této řadě seriálu\" class =\"plus-version\" href=\"https://www.titulky.com/index.php?Fulltext="+clearTitleEpisodeOnly(title)+"\">K celé řadě</a>");
 		} 		
 
-		// searchMovieCsfd(spaceTitle,year,"makeMagicCsfd");
+		// searchMovieCsfd(spaceTitle,year,"displayCsfdRating");
 		searchMovieImdb(imdb,title);
 	}
 
@@ -612,12 +624,14 @@ $(document).ready(function() {
 	// vysledky vyhledavani
 	if (location.href.indexOf("Fulltext") !== -1)
 	{
+
+		//highlight exact results
 		var search = $("#searchTitulky").val().toLowerCase();
 		if (search.length)
 		{
-			$.get("http://www.omdbapi.com/?s="+search,function(data)
+			$.get("https://www.omdbapi.com/?s=" + search + "&apikey=2c7f8b02", function(data)
 			{
-				data = JSON.parse(data);
+				console.log(data);
 				if (typeof data.Search !== "undefined")
 				{
 					var year = data["Search"][0]["Year"];
@@ -698,7 +712,7 @@ $(document).ready(function() {
 
 // FORUM
 	/* Jiz implementovano nativne */
-	var lengthValue = 5;
+	//var lengthValue = 5;
 	// prida hash ke vzkazum na foru
 	/*$("#stat_bok_v span a").each(function(index,value)
 	{
@@ -781,24 +795,24 @@ $(document).ready(function() {
 				});
 		}
 
-	var date = new Date(),
-		year = date.getFullYear();
+        /*var date = new Date(),
+            year = date.getFullYear();
 
-	if (items.udalost && year == "2014")
-	{
-		// hlavni stranka (index)
-		if ($(".iboxcover").length) //orloj (by fredikoun) :)
-		{
-			// console.log("Vánoce!!!");
-			$("#slider li").eq(1).find("img").attr("src","chrome-extension://"+chrome.runtime.id+"/christmas.jpg");
-		}
+        if (items.udalost && year == "2014")
+        {
+            // hlavni stranka (index)
+            if ($(".iboxcover").length) //orloj (by fredikoun) :)
+            {
+                // console.log("Vánoce!!!");
+                $("#slider li").eq(1).find("img").attr("src","chrome-extension://"+chrome.runtime.id+"/christmas.jpg");
+            }
 
-		if ($("#head_a1").length) //orloj (by fredikoun) :)
-		{
-			$(this).hide();
-			$("#head_a1").append("<img class =\"plus-snowman\" src =\"chrome-extension://"+chrome.runtime.id+"/snowman.png\">");
-		}
-	}
+            if ($("#head_a1").length) //orloj (by fredikoun) :)
+            {
+                $(this).hide();
+                $("#head_a1").append("<img class =\"plus-snowman\" src =\"chrome-extension://"+chrome.runtime.id+"/snowman.png\">");
+            }
+        }*/
 
 	// vysledky hledani (fulltext i prime)
 		if (location.href.indexOf("Fulltext") !== -1 || location.href.indexOf("Searching") !== -1)
