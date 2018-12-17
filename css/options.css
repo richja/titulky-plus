@@ -32,7 +32,7 @@ h2 {
 	font-weight: bold;
 	background: rgb(221, 221, 221);
 	border: 1px solid silver;
-	margin: 2px 0px 2px 0px;
+	margin: 2px 0 2px 0;
 	border-radius: 4px;
 	cursor: pointer;
 }

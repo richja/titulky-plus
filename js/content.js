@@ -267,30 +267,6 @@ $(document).ready(function() {
 		}
 	}
 
-	//**************** VÝSLEDKY VYHLEDÁVÁNÍ *************************************************
-	if (location.href.indexOf("Fulltext") !== -1) {
-
-		//highlight exact results
-		var search = $("#searchTitulky").val().toLowerCase();
-		if (search.length)
-		{
-			$.get("https://www.omdbapi.com/?s=" + search + "&apikey=2c7f8b02", function(data)
-			{
-				console.log(data);
-				if (typeof data.Search !== "undefined")
-				{
-					var year = data["Search"][0]["Year"];
-				}
-				$(".soupis td:nth-child(1)").slice(1).filter(function()
-				{
-					return $(this).text().trim().toLowerCase().replace(new RegExp(/ s\d{2}e\d{2}.*/), "") == search;
-				}).closest("tr").addClass("plus-topped");
-				$(".plus-topped:first").attr("id","titulek").attr("name","titulek");
-				window.location.hash="titulek";
-			});
-		}
-	}	
-
 	//**************** SEKCE NOVÝ PŘEKLAD ČI ÚPRAVA ROZPRACOVANÉHO **************************
 	if (location.href.indexOf("Preklad=") !== -1) {
 	
@@ -491,7 +467,7 @@ $(document).ready(function() {
 					var linked = autolinker.link($(linkEl[i]).html());
 					$(linkEl[i]).html(linked);
 				}				
-			};
+			}
 		}	
 		
 		//------------ PŘÍMÉ VYHLEDÁVÁNÍ // PODLE NASTAVENI V OPTIONS -----------------------------------------------------	
@@ -622,7 +598,7 @@ function getUserId () {
 }
 
 function isActiveTranslator () {
-	return ($("#tablelogon img").eq(1).attr("src") && $("#tablelogon img").eq(1).attr("src") !== "./img/stars/0.gif") ? true : false;
+	return $("#tablelogon img").eq(1).attr("src") && $("#tablelogon img").eq(1).attr("src") !== "./img/stars/0.gif";
 }
 
 function getBrowserLink (imgUrl) {
