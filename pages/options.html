@@ -6,7 +6,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="author" content="Jan Richter">
-	<link rel="stylesheet" href="options.css">
+	<link rel="stylesheet" href="../css/options.css">
 </head>
 <body>
 <h1>Nastavení rozšíření Titulky Plus</h1>
@@ -15,7 +15,7 @@
 <br>
 <label>
 	<input type="checkbox" id="vyhledavani" name ="vyhledavani">
-	Rovnou vyhledávat pouze přesnou shodu (žádný fulltext) - pro uživatele s premiovými účty
+	Vyhledávat pouze přesnou shodu (žádný fulltext) - pro premium uživatele
 </label>
 <br><br>
 <label>
@@ -30,7 +30,7 @@
 <br><br>
 <label>
 	<input type="checkbox" id="hlavicka" name ="hlavicka">
-	Zobrazit klasickou modrou klikací hlavičku webu (je-li například skrytá kvůli reklamě)
+	Zobrazit klasickou modrou hlavičku webu (je-li například skrytá reklamou)
 </label>
 <br><br>
 <label>
@@ -60,18 +60,18 @@
 	<br>
 	<textarea class ="notes" name ="poznamky" id="poznamky"></textarea>
 </label>
-<br>
 
 <!-- <button id="nova">Přidat další šablonu pro nové titulky</button> -->
 
-<br>
+<div id="status"></div>
 
 <button id="save">Uložit nastavení</button>
-<div id="status"></div>
+<button id="reset">Výchozí nastavení</button>
 <p>
 	<i>Vytvořil <a href ="http://richja.cz">Jan Richter</a> (richja), případné návrhy, chybky apod. prosím na <a href="mailto:rich2@seznam.cz">rich2@seznam.cz</a></i>
+<br>
+	<i>Úprava pro Firefox <a href ="http://idzor.cf">Igor Zdražil</a> (IDžOR), <a href="mailto:idzorg@gmail.com">idzorg@gmail.com</a></i>
 </p>
-
-<script src="options.js"></script>
+<script src="../js/options.js"></script>
 </body>
 </html>
