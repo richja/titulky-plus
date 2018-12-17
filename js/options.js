@@ -27,22 +27,22 @@ document.getElementById('save').addEventListener('click', () => {
 	const info = document.getElementById('status');
 
 	try {
-	chrome.storage.local.set({
-	  vyhledavani: document.getElementById('vyhledavani').checked,
-	  domu: document.getElementById('domu').checked,
-	  premium: document.getElementById('premium').checked,
-	  hlavicka: document.getElementById('hlavicka').checked,
-	  odkazy: document.getElementById('odkazy').checked,
-	  udalost: document.getElementById('udalost').checked,
-	  rozpracovane: removeTags(document.getElementById('rozpracovane').value),
-	  poznamky: removeTags(document.getElementById('poznamky').value)
-	}, () => {
-	  info.textContent = 'Nastavení bylo uloženo';
-	  restore();
-	});
+		chrome.storage.local.set({
+			vyhledavani: document.getElementById('vyhledavani').checked,
+			domu: document.getElementById('domu').checked,
+			premium: document.getElementById('premium').checked,
+			hlavicka: document.getElementById('hlavicka').checked,
+			odkazy: document.getElementById('odkazy').checked,
+			udalost: document.getElementById('udalost').checked,
+			rozpracovane: removeTags(document.getElementById('rozpracovane').value),
+			poznamky: removeTags(document.getElementById('poznamky').value)
+		}, () => {
+			info.textContent = 'Nastavení bylo uloženo';
+			restore();
+		});
 	}
 	catch (e) {
-	 info.textContent = e.message;
+		info.textContent = e.message;
 	}
 	window.setTimeout(() => info.textContent = '', 3000);
 });
@@ -54,23 +54,23 @@ document.getElementById('reset').addEventListener('click', () => chrome.storage.
 var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
 
 var tagOrComment = new RegExp(
-    '<(?:'
-    // Comment body.
-    + '!--(?:(?:-*[^->])*--+|-?)'
-    // Special "raw text" elements whose content should be elided.
-    + '|script\\b' + tagBody + '>[\\s\\S]*?</script\\s*'
-    + '|style\\b' + tagBody + '>[\\s\\S]*?</style\\s*'
-    // Regular name
-    + '|/?[a-z]'
-    + tagBody
-    + ')>',
-    'gi');
+	'<(?:'
+	// Comment body.
+	+ '!--(?:(?:-*[^->])*--+|-?)'
+	// Special "raw text" elements whose content should be elided.
+	+ '|script\\b' + tagBody + '>[\\s\\S]*?</script\\s*'
+	+ '|style\\b' + tagBody + '>[\\s\\S]*?</style\\s*'
+	// Regular name
+	+ '|/?[a-z]'
+	+ tagBody
+	+ ')>',
+	'gi');
 	
 function removeTags(html) {
-  var oldHtml;
-  do {
-    oldHtml = html;
-    html = html.replace(tagOrComment, '');
-  } while (html !== oldHtml);
-  return html.replace(/</g, '&lt;');
+	var oldHtml;
+	do {
+		oldHtml = html;
+		html = html.replace(tagOrComment, '');
+	} while (html !== oldHtml);
+	return html.replace(/</g, '&lt;');
 }
