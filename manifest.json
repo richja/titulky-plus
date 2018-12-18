@@ -3,11 +3,18 @@
 	"name": "Titulky plus",
 	"version": "0.93",
 	"minimum_chrome_version": "40",
-
+   	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh7lyGL/Zohk53xqGF1ZolqUSMURLa48UoiPyxQnWPjwGzdaTsEreHZJJrqqA4Krih3mQXsknHM0zcz2jfBc+n8ra1jmLsEToUwbzh5NJlhQDH6hkSGuk3qCfmz8rrtOCg/MmoWg6n/1W4kZip4FeIHfNeUZCh7Lbxi6I4XGKOJ4/DLyfAVbSP0ph8GqeaaF/SiRQcOPL+WUXwjt4x81qnzBMeynza6Y0JzOc0g087js77bw4oYjzW4svdRfAjdTt7Q96Qluq8sTXHnGCwyiarcLJJLZ0ktLPFyOTTzbD3ObbB9AhSghpl8L5AtZbCdzgHuneeH+ePFPQ56vgDt29iQIDAQAB",
+    
 	"description": "Vylepšení webu titulky.com pro pohodlnější práci (nejen pro překladatele).",
 	"author": "Jan Richter, Igor Zdražil",
 	"short_name": "Titulky+",
 
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "titulkyplus@idzor.cf"
+		}
+	},
+	
 	"permissions": [
 		"tabs",
 		"activeTab",
