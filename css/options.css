@@ -42,7 +42,8 @@ h2 {
 }
 
 textarea {
-	width: 620px;
+	width: 100%;
+	max-width: 700px;
 	height: 150px;
 	margin-bottom: 10px;
 }
