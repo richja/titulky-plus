@@ -218,15 +218,12 @@ $(document).ready(function() {
 
 			$.get("https://www.titulky.com/index.php?Stat=5",function(data) {
 
-				var rawHTML = document.createElement('div'),
-					links = [],
+				var 	links = [],
 					imdbNumbers = [],
 					startDates = [],
 					endDates = [];
-					
-				rawHTML.innerHTML = data;
 
-				$(rawHTML).find(".soupis").eq(1).find(".row1,.row2").each(function(index, value) {
+				$(data).find(".soupis").eq(1).find(".row1,.row2").each(function(index, value) {
 					var hrefNode = $($($(value).find("a"))[1]),
 						imdbN = hrefNode.attr('href').split("tt").pop().replace("/","").trim(),
 						startDate = $($($(value).find("td"))[2]).text(),
@@ -619,14 +616,11 @@ function updateCommentFeed (lastVisit) {
 	// komentare a reakce
 	$.get("https://www.titulky.com/index.php?UserDetail=me",function(data) {
 
-		var rawHTML = document.createElement('div');
-		rawHTML.innerHTML = data;
-
 		var counter = 0,
 			counterAns = 0,
 			counterMentions = 0;
 		$("#side1wrap ul").eq(3).find("li").each(function(index, value) {
-		// $(rawHTML).find("#side1wrap ul:nth-child(4) li").each(function(index, value) {
+		// $(data).find("#side1wrap ul:nth-child(4) li").each(function(index, value) {
 			var pattern = /([^\[][^\]]*)/,
 				matches = pattern.exec($(value).text()),
 				dateSplit = matches[0].split("."),
@@ -648,7 +642,7 @@ function updateCommentFeed (lastVisit) {
 		});
 
 
-		$(rawHTML).find("#side1wrap ul").last().children().each(function(index, value) {
+		$(data).find("#side1wrap ul").last().children().each(function(index, value) {
 			var pattern = /([^\[][^\]]*)/,
 				matches = pattern.exec($(value).text()),
 				dateSplit = matches[0].split("."),
@@ -677,10 +671,8 @@ function updateCommentFeed (lastVisit) {
 
 				// komentare v rozpracovanych
 				$.get("https://www.titulky.com/?Stat=5&item="+items.preklad,function(data) {
-					var rawHTML = document.createElement('div');
-					rawHTML.innerHTML = data;
 
-					$(rawHTML).find(".soupis .detail").first().find("tr").each(function(index, value) {
+					$(data).find(".soupis .detail").first().find("tr").each(function(index, value) {
 						if(index%2)
 						{
 							var dateRaw = $(value).children().first().text().trim().split(" ");
