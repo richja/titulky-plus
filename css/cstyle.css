@@ -7,7 +7,7 @@
 	display: block;
 	border-radius: 4px;
 	background: #DDDDDD;
-	font-size: 13px;
+	font-size: 12px;
 	padding: 5px;
 	right: 12px;
 	top: 70px;
@@ -62,7 +62,6 @@
 	padding: 0 !important;
 	text-align: center !important;
 	font-weight: bold !important;
-	display: 
 }
 
 .plus-cell-rating a {
@@ -148,7 +147,7 @@
 	display: block;
 	border-radius: 4px;
 	background: #DDDDDD;
-	font-size: 13px;
+	font-size: 12px;
 	padding: 4px;
 	right: 12px;
 	top: 70px;
@@ -198,3 +197,12 @@
 	left: 155px;
 	top: -87px;
 }
+
+#link_under{
+	position:fixed;
+	border:1px solid #ccc;
+	background:#333;
+	padding:5px;
+	display:none;
+	color:#fff;
+	}

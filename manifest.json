@@ -1,41 +1,57 @@
 {
-	"name": "Titulky plus",
-	"short_name": "Titulky+",
-	"author": "Jan Richter",
-	"version": "0.92",
-	"description": "Vylepšení webu titulky.com pro pohodlnější práci (nejen pro překladatele).",
 	"manifest_version": 2,
-	"icons": {
-		"16": "icon16.png",
-		"48": "icon48.png",
-		"128": "icon128.png"
+	"name": "Titulky plus",
+	"version": "0.93",
+	"minimum_chrome_version": "40",
+   	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh7lyGL/Zohk53xqGF1ZolqUSMURLa48UoiPyxQnWPjwGzdaTsEreHZJJrqqA4Krih3mQXsknHM0zcz2jfBc+n8ra1jmLsEToUwbzh5NJlhQDH6hkSGuk3qCfmz8rrtOCg/MmoWg6n/1W4kZip4FeIHfNeUZCh7Lbxi6I4XGKOJ4/DLyfAVbSP0ph8GqeaaF/SiRQcOPL+WUXwjt4x81qnzBMeynza6Y0JzOc0g087js77bw4oYjzW4svdRfAjdTt7Q96Qluq8sTXHnGCwyiarcLJJLZ0ktLPFyOTTzbD3ObbB9AhSghpl8L5AtZbCdzgHuneeH+ePFPQ56vgDt29iQIDAQAB",
+    
+	"description": "Vylepšení webu titulky.com pro pohodlnější práci (nejen pro překladatele).",
+	"author": "Jan Richter, Igor Zdražil",
+	"short_name": "Titulky+",
+
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "titulkyplus@idzor.cf"
+		}
 	},
-	"web_accessible_resources": [
-		"*.png",
-		"*.jpg"
-	],
-	"content_scripts": [
-	{
-		"js": ["jquery.min.js","chosen.jquery.min.js","pusher.min.js","autolinker.min.js","content.js"],
-		"matches": ["*://*.titulky.com/*"],
-		"css": ["chosen.min.css","cstyle.css"]
-	}
-	],
-	"page_action": {
-		"default_icon": "icon16.png",
-		"default_popup": "popup.html"
-	},
-	"options_page": "options.html",
+	
 	"permissions": [
 		"tabs",
-		"declarativeContent",
-		"storage"
+		"activeTab",
+		"storage",
+		"*://*.omdbapi.com/*",
+		"*://*.titulky.com/*"
 	],
-	"background": {
-		"scripts": [
-			"background.js"
-		],
-		"persistent": false
+
+	"icons": {
+		"16" : "images/icon16.png",
+		"48" : "images/icon48.png",
+		"128": "images/icon128.png"
 	},
-	"minimum_chrome_version": "33.0.0"
+
+	"content_scripts": [ {
+		"css": [ "css/cstyle.css" ],
+		"js": [ "js/jquery.min.js", "js/pusher.min.js", "js/autolinker.min.js", "js/content.js" ],
+		"matches": [ "*://*.titulky.com/*" ]
+	} ],
+
+	"options_ui": {
+		"page": "pages/options.html"
+	},
+
+	"browser_action": {
+		"browser_style": true,
+		"default_icon": {
+			"16" : "images/icon16.png",
+			"48" : "images/icon48.png",
+			"128": "images/icon128.png"
+		},
+		"default_title": "Titulky Plus",
+		"default_popup": "pages/popup.html"
+	},
+
+	"web_accessible_resources": [
+		"images/*.png",
+		"images/*.jpg"
+	]
 }
