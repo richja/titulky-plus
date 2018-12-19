@@ -1,3 +1,22 @@
+
+
+TODO:
+
+Zkontrolovat
+1,5-Jak se to chova pri vice rozpracovanych
+2 - UPDATE KOMENTÁŘŮ PRO ROZPRACOVANÝ PŘEKLAD // JINAK TLAČÍTKO NOVÝ PŘEKLAD - tlačítko nový více prošrudovat
+4 - PŘIDEJ HLAVIČKU WEBU
+5 - AUTOLIKER ? FUNGUJE TO vUBEC? NENI TO UZ NATIVNE IMPLEMENTOVANE?
+
+predelat
+autocompletebytitle
+
+Napady:
+- pohrat si s CSFD API https://github.com/PatrikValkovic/csfd-api
+- vytvorit ajax getJSON imdb+csfd akce ondemand
+- ukladani getJSON imdb+csfd do local storage na 24h
+
+-----------------
 Zbývá udělat:
 
 Hotovo:
